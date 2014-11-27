@@ -9,9 +9,44 @@
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/aight/1.1.1/aight.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/sizzle/1.10.9/sizzle.min.js"></script>
   <![endif]-->
-  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
-  <link href='assets/mapfilter.min.css' rel='stylesheet' />
-  <link href='assets/print.min.css' rel='stylesheet' id="print-style-sheet" media="print" />
+  <script src='js/lib/jquery-2.0.3.js'></script>
+  <script src='js/lib/d3.v3.js'></script>
+  <script src='js/lib/locale.js'></script>
+  <script src='data/locale.js'></script>
+  <script src='js/lib/leaflet-0.7.1.js'></script>
+  <script src='js/lib/lodash.modern-2.4.1.js'></script>
+  <script src='js/lib/backbone.js'></script>
+  <script src='js/lib/crossfilter.v1.js'></script>
+  <script src='js/lib/bing_layer.js'></script>
+  <script src='js/lib/leaflet_providers.js'></script>
+
+  <script src='js/mapfilter/monitoring_point.js'></script>
+
+  <script src='js/mapfilter/mapfilter.js'></script>
+
+  <script src='js/mapfilter/collection.js'></script>
+
+  <script src='js/mapfilter/map_pane/map_pane.js'></script>
+  <script src='js/mapfilter/map_pane/marker_view.js'></script>
+  <script src='js/mapfilter/map_pane/current_view_info.js'></script>
+
+  <script src='js/mapfilter/info_pane/info_pane.js'></script>
+
+  <script src='js/mapfilter/filter_pane/filter_pane.js'></script>
+  <script src='js/mapfilter/filter_pane/discrete_filter_view.js'></script>
+  <script src='js/mapfilter/filter_pane/continuous_filter_view.js'></script>
+  <script src='js/mapfilter/filter_pane/graph_pane.js'></script>
+  <script src='js/mapfilter/filter_pane/bar_chart.js'></script>
+
+  <script src='js/mapfilter/print_pane/print_pane.js'></script>
+  <script src='js/mapfilter/print_pane/info_print_view.js'></script>
+
+  <link href='css/bootstrap.css' rel='stylesheet' />
+  <link href='css/leaflet.css' rel='stylesheet' />
+  <link href='css/core.css' rel='stylesheet' />
+  <link href='css/print.css' rel='stylesheet' id="print-style-sheet" media="print" />
+  <link href='css/chart.css' rel='stylesheet' />
+
 </head>
 
 <body>
@@ -81,7 +116,7 @@
 <div class="<%= className %>">
   <label>
     <input type="checkbox" value="<%= key %>" checked>
-    <span class="<%= labelClass %>"><%= text %></span> 
+    <span class="<%= labelClass %>"><%= text %></span>
     &nbsp;<small><a class="select select_one" href="javascript:void(0);"><%= t("ui.filter_view.select_one") %></a></small>
   </label>
 </div>
@@ -122,7 +157,7 @@
 </div>
 </script>
 
-<script src='assets/mapfilter.js'></script>
+<script src='js/setup.js'></script>
 
 </body>
 
