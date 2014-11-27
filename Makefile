@@ -54,7 +54,7 @@ assets/mapfilter.min.css: assets/mapfilter.css Makefile
 	node_modules/.bin/cleancss -o $@ $<
 
 assets/print.css: Makefile
-	css/print.css
+	cp css/print.css $@
 
 assets/print.min.css: assets/print.css
 	@rm -f $@
