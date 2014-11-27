@@ -20,6 +20,30 @@ MapFilter.MapPane = Backbone.View.extend({
         // Add the background tile layer to the map
         this.wapichanaLayer = L.tileLayer(options.tileUrl).addTo(this.map);
 
+        L.bingLayer.initialize = function(key, options) {
+            L.Util.setOptions(this, options);
+
+            var cachedMeta = {
+                "resourceSets": [{
+                    "resources": [{
+                        "imageHeight": 256,
+                        "imageUrl": "http:\/\/ecn.{subdomain}.tiles.virtualearth.net\/tiles\/a{quadkey}.jpeg?g=2732",
+                        "imageUrlSubdomains": ["t0", "t1", "t2", "t3"],
+                        "imageWidth": 256,
+                        "imageryProviders": null
+                    }],
+                }],
+                "statusCode": 200,
+                "statusDescription": "OK"
+            };
+
+            this._key = key;
+            this._url = null;
+            this.meta = cachedMeta;
+            this.initMetadata();
+            this.loadMetadata();
+        };
+
         // Create a layer with Bing satellite imagery
         this.bingLayer = L.bingLayer(options.bingKey);
 
