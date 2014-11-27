@@ -69,7 +69,7 @@ MonitoringPoint = Backbone.Model.extend({
 	},
 
 	// Takes a field that is a space-separated list of values, which may include "other"
-	// and formats that field together with the "other" field into a comma-separated 
+	// and formats that field together with the "other" field into a comma-separated
 	// list of readable text.
 	_getOther: function(attr, attr_other) {
 		var value = this.get(attr);

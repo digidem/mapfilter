@@ -1,41 +1,62 @@
 all: \
-	dist/mapfilter.css \
-	dist/mapfilter.min.css \
-	dist/mapfilter.js \
-	dist/mapfilter.min.js
+	assets/mapfilter.css \
+	assets/mapfilter.min.css \
+	assets/print.css \
+	assets/print.min.css \
+	assets/mapfilter.js \
+	assets/mapfilter.min.js
   
-dist/mapfilter.js: \
-  js/mapfilter/mapfilter.js \
-  js/mapfilter/collection.js \
-  js/mapfilter/map_pane/map_pane.js \
-  js/mapfilter/map_pane/marker_view.js \
-  js/mapfilter/map_pane/current_view_info.js \
-  js/mapfilter/info_pane/info_pane.js \
-  js/mapfilter/filter_pane/filter_pane.js \
-  js/mapfilter/filter_pane/discrete_filter_view.js \
-  js/mapfilter/filter_pane/continuous_filter_view.js \
-  js/mapfilter/filter_pane/graph_pane.js \
-  js/mapfilter/filter_pane/bar_chart.js
+assets/mapfilter.js: \
+	js/lib/d3.v3.js \
+	js/lib/locale.js \
+	js/lib/leaflet-0.7.1.js \
+	js/lib/lodash.modern-2.4.1.js \
+	js/lib/backbone.js \
+	js/lib/crossfilter.v1.js \
+	js/lib/bing_layer.js \
+	js/lib/leaflet_providers.js \
+	data/locale.js \
+	js/mapfilter/mapfilter.js \
+	js/mapfilter/monitoring_point.js \
+	js/mapfilter/collection.js \
+	js/mapfilter/map_pane/map_pane.js \
+	js/mapfilter/map_pane/marker_view.js \
+	js/mapfilter/map_pane/current_view_info.js \
+	js/mapfilter/info_pane/info_pane.js \
+	js/mapfilter/filter_pane/filter_pane.js \
+	js/mapfilter/filter_pane/discrete_filter_view.js \
+	js/mapfilter/filter_pane/continuous_filter_view.js \
+	js/mapfilter/filter_pane/graph_pane.js \
+	js/mapfilter/filter_pane/bar_chart.js \
+	js/mapfilter/print_pane/print_pane.js \
+	js/mapfilter/print_pane/info_print_view.js
 
-dist/mapfilter.js: node_modules/.install Makefile
+assets/mapfilter.js: node_modules/.install Makefile
 	@rm -f $@
 	cat $(filter %.js,$^) > $@
 
-dist/mapfilter.min.js: dist/mapfilter.js Makefile
+assets/mapfilter.min.js: assets/mapfilter.js Makefile
 	@rm -f $@
 	node_modules/.bin/uglifyjs $< -c -m -o $@
 
-dist/mapfilter.css: \
+assets/mapfilter.css: \
 	css/bootstrap.css \
 	css/chart.css \
 	css/core.css \
 	css/leaflet.css
 
-dist/mapfilter.css: Makefile
+assets/mapfilter.css: Makefile
 	@rm -f $@
 	cat $(filter %.css,$^) > $@
 
-dist/mapfilter.min.css: dist/mapfilter.css Makefile
+assets/mapfilter.min.css: assets/mapfilter.css Makefile
+	@rm -f $@
+	node_modules/.bin/cleancss -o $@ $<
+
+assets/print.css: Makefile
+	css/print.css
+
+assets/print.min.css: assets/print.css
 	@rm -f $@
 	node_modules/.bin/cleancss -o $@ $<
 
@@ -43,7 +64,7 @@ node_modules/.install: package.json
 	npm install && touch node_modules/.install
   
 clean:
-	rm -f dist/mapfilter*.js dist/mapfilter*.css
+	rm -f assets/mapfilter*.js assets/mapfilter*.css
 
 D3_FILES = \
 	node_modules/d3/src/start.js \

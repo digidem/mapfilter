@@ -258,12 +258,12 @@ hr {
   border: 0;
 }
 @media print {
-  * {
+/*  * {
     text-shadow: none !important;
     color: #000 !important;
     background: transparent !important;
     box-shadow: none !important;
-  }
+  }*/
   a,
   a:visited {
     text-decoration: underline;
@@ -530,10 +530,10 @@ dd {
   .dl-horizontal dd:after {
     content: " ";
     /* 1 */
-  
+
     display: table;
     /* 2 */
-  
+
   }
   .dl-horizontal dd:after {
     clear: both;
@@ -542,10 +542,10 @@ dd {
   .dl-horizontal dd:after {
     content: " ";
     /* 1 */
-  
+
     display: table;
     /* 2 */
-  
+
   }
   .dl-horizontal dd:after {
     clear: both;
@@ -2143,24 +2143,45 @@ td.visible-print {
 }
 #app {
     position: absolute;
+    padding: 0;
+    margin: 0;
     right: 0;
     left: 0;
     top: 0;
     bottom: 0;
     -webkit-transition: -webkit-transform 600ms;
+    transition: -webkit-transform 600ms;
 }
 
 #app.show-date-filter {
     -webkit-transform: translateY(150px);
+    transform: translateY(150px);
 }
 
 #map {
-    position: absolute;
+    position: absolute !important;
     right: 0;
     width: 80%;
     height: 100%;
     background-color: #f0e5d1;
 }
+
+#print-pane {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: -99;
+}
+
+#map-print {
+    width: 18cm;
+    height: 22cm;
+}
+
 #filter-pane form, #info-pane {
     position: absolute;
     background: #fff;
@@ -2188,6 +2209,8 @@ td.visible-print {
 }
 
 #graph-pane .close {
+    position: absolute;
+    right: 0;
     font-size: 30px;
     margin-right: 0.5em;
 }
@@ -2199,8 +2222,8 @@ td.visible-print {
     position: relative;
 }
 
-.leaflet-top.leaflet-left {
-    position: relative;
+.leaflet-top {
+    top: 2.5em;
 }
 
 .checkbox .select {
@@ -2263,6 +2286,10 @@ td.visible-print {
     -webkit-transition: opacity 100ms;
 }
 
+.marker.filtered {
+    opacity: 0.15;
+}
+
 .marker .outline {
     stroke-width: 2;
     stroke: #fff;
@@ -2281,6 +2308,7 @@ td.visible-print {
 }
 
 .marker .marker-text {
+    display: none;
     position: absolute;
     font-size: 12px;
     top: 0;
