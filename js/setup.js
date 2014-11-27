@@ -38,7 +38,7 @@ $(function() {
         mapZoom: 10,
 
         // Template to generate maptile urls. See http://leafletjs.com/reference.html#url-template
-         tileUrl: 'http://{s}.tiles.mapbox.com/v3/gmaclennan.wapichana_background/{z}/{x}/{y}.jpg',
+        tileUrl: 'http://{s}.tiles.mapbox.com/v3/gmaclennan.wapichana_background/{z}/{x}/{y}.jpg',
         // tileUrl: 'http://localhost:20008/tile/wapichana_background/{z}/{x}/{y}.png',
 
         // API key for Bing Maps use
