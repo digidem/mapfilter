@@ -1,4 +1,5 @@
 all: \
+	node_modules/.install \
 	assets/mapfilter.css \
 	assets/mapfilter.min.css \
 	assets/print.css \
@@ -12,6 +13,8 @@ assets/mapfilter.js: \
 	js/lib/leaflet-0.7.1.js \
 	js/lib/lodash.modern-2.4.1.js \
 	js/lib/backbone.js \
+	js/lib/queue-from-async.js \
+	js/lib/backbone-github.js \
 	js/lib/crossfilter.v1.js \
 	js/lib/bing_layer.js \
 	js/lib/leaflet_providers.js \
@@ -81,6 +84,12 @@ D3_FILES = \
 
 js/lib/d3.v3.js: $(D3_FILES)
 	node_modules/.bin/smash $(D3_FILES) > $@
+
+js/lib/backbone-github.js: node_modules/.install node_modules/backbone-github/dist/backbone-github.js
+	cp node_modules/backbone-github/dist/backbone-github.js $@
+
+js/lib/queue-from-async.js: node_modules/.install
+	node_modules/.bin/browserify node_modules/queue-from-async/index.js --standalone async.queue -o $@
 
 js/lib/bing_layer.js:
 	curl https://raw.github.com/shramov/leaflet-plugins/master/layer/tile/Bing.js -o $@

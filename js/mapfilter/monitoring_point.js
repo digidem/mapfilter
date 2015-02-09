@@ -7,6 +7,8 @@
 // methods without needing to modify the rest of the application.
 MonitoringPoint = Backbone.Model.extend({
 
+	idAttribute: "_uuid",
+
 	// Override the default Backbone `get()` so that `undefined`
 	// attributes are returned as 'not_recorded'
 	get: function(attr) {

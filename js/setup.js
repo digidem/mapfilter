@@ -1,8 +1,10 @@
 $(function() {
 
+    Backbone.sync = BackboneGithub.sync({ githubToken: 'xxx' });
+
     var monitoringPoints = new MapFilter.Collection(void 0, {
         model: MonitoringPoint,
-        url: 'data/formhub.json',
+        url: 'https://github.com/digidem/wapichan-data/tree/master/monitoring_form_v1',
         comparator: 'start'
     });
 
