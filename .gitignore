@@ -1,1 +1,11 @@
+# config
 config.json
+
+# build dir
+dist
+
+# deps
+node_modules
+
+# random temp files
+.DS_Store
