@@ -22,12 +22,12 @@
     "lodash": "^3.1.0"
   },
   "scripts": {
-    "start": "npm run watch & serve",
+    "start": "npm run watch & ./node_modules/serve",
     "lint": "jshint js/mapfilter",
     "watch-js": "watchify -v -d js/mapfilter/mapfilter.js -o dist/mapfilter.js",
     "build-js": "browserify -d js/mapfilter/mapfilter.js > dist/mapfilter.js",
-    "build-css": "cat css/bootstrap.css css/chart.css css/core.css css/leaflet.css > dist/mapfilter.css",
-    "watch-css": "catw css/bootstrap.css css/chart.css css/core.css css/leaflet.css -o dist/mapfilter.css -v",
+    "build-css": "GLOBIGNORE=css/print.css & cat css/bootstrap.css css/chart.css css/core.css css/leaflet.css > dist/mapfilter.css && cat css/print.css > dist/print.css",
+    "watch-css": "catw css/bootstrap.css css/chart.css css/core.css css/leaflet.css -o dist/mapfilter.css -v & catw css/print.css -o dist/print.css -v",
     "watch": "npm run watch-js & npm run watch-css",
     "build": "npm run build-js && npm run build-css",
     "production": "browserify js/mapfilter/mapfilter.js -d -p [minifyify --map mapfilter.min.js.map --output dist/mapfilter.min.js.map] > dist/mapfilter.min.js"
