@@ -530,10 +530,10 @@ dd {
   .dl-horizontal dd:after {
     content: " ";
     /* 1 */
-
+  
     display: table;
     /* 2 */
-
+  
   }
   .dl-horizontal dd:after {
     clear: both;
@@ -542,10 +542,10 @@ dd {
   .dl-horizontal dd:after {
     content: " ";
     /* 1 */
-
+  
     display: table;
     /* 2 */
-
+  
   }
   .dl-horizontal dd:after {
     clear: both;
@@ -2158,6 +2158,11 @@ td.visible-print {
     transform: translateY(150px);
 }
 
+svg {
+    width: 100%;
+    height: 100%;
+}
+
 #map {
     position: absolute !important;
     right: 0;
@@ -2675,12 +2680,12 @@ td.visible-print {
 	border-radius: 5px;
 	}
 .leaflet-control-layers-toggle {
-	background-image: url(images/layers.png);
+	background-image: url(../images/layers.png);
 	width: 36px;
 	height: 36px;
 	}
 .leaflet-retina .leaflet-control-layers-toggle {
-	background-image: url(images/layers-2x.png);
+	background-image: url(../images/layers-2x.png);
 	background-size: 26px 26px;
 	}
 .leaflet-touch .leaflet-control-layers-toggle {

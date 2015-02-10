@@ -3,7 +3,9 @@
 
 // MapFilter MarkerView manages the markers displayed on the map. It should be 
 // initialized with a reference to the model and to the map in the options hash
-MapFilter.MarkerView = Backbone.View.extend({
+'use strict';
+
+module.exports = require('backbone').View.extend({
 
     events: {
         "mouseover": "onMouseOver",
@@ -13,10 +15,10 @@ MapFilter.MarkerView = Backbone.View.extend({
 
     // The default icon is an svg icon wrapped in a div
     icon: L.divIcon({
-        html: '<svg><g transform="translate(4,4.5)">' + 
-              '<path class="outline" d="M 17,8 C 17,13 11,21 8.5,23.5 C 6,21 0,13 0,8 C 0,4 4,-0.5 8.5,-0.5 C 13,-0.5 17,4 17,8 z"/>' + 
-              '<path class="fill" d="M 17,8 C 17,13 11,21 8.5,23.5 C 6,21 0,13 0,8 C 0,4 4,-0.5 8.5,-0.5 C 13,-0.5 17,4 17,8 z"/>' + 
-              '</g></svg>' + 
+        html: '<svg><g transform="translate(4,4.5)">' +
+              '<path class="outline" d="M 17,8 C 17,13 11,21 8.5,23.5 C 6,21 0,13 0,8 C 0,4 4,-0.5 8.5,-0.5 C 13,-0.5 17,4 17,8 z"/>' +
+              '<path class="fill" d="M 17,8 C 17,13 11,21 8.5,23.5 C 6,21 0,13 0,8 C 0,4 4,-0.5 8.5,-0.5 C 13,-0.5 17,4 17,8 z"/>' +
+              '</g></svg>' +
               '<div class="marker-text"/>',
         iconSize: [25, 34],
         iconAnchor: [25 / 2, 30],
@@ -28,6 +30,8 @@ MapFilter.MarkerView = Backbone.View.extend({
 
         // Sometimes models (monitoring reports) do not have coordinates
         if (!loc[0] || !loc[1]) loc = [0, 0];
+
+        this.appView = options.appView;
 
         // Create a new marker with the default icon and add to the map
         this.marker = L.marker(loc, {
@@ -65,7 +69,7 @@ MapFilter.MarkerView = Backbone.View.extend({
     onMouseOver: function(e) {
         e.stopPropagation();
         this.$el.addClass("hover");
-        app.infoPane.show({
+        this.appView.infoPane.show({
             model: this.model
         });
     },
@@ -73,7 +77,7 @@ MapFilter.MarkerView = Backbone.View.extend({
     // Hide the infopane when the mouse leaves the marker 
     onMouseOut: function() {
         this.$el.removeClass("hover");
-        app.infoPane.hide();
+        this.appView.infoPane.hide();
     },
 
     // When you click the marker, make the infoPane "stick" open
@@ -81,7 +85,7 @@ MapFilter.MarkerView = Backbone.View.extend({
     onClick: function(e) {
         e.stopPropagation();
         this.$el.toggleClass("clicked");
-        app.infoPane.toggle({
+        this.appView.infoPane.toggle({
             model: this.model,
             sticky: true,
             iconView: this

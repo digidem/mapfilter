@@ -3,6 +3,24 @@ MapFilter
 
 Mapfilter is an online/offline web tool for visualizing, exploring, filtering and print or web publishing of monitoring data.
 
+Development
+--------------
+
+You will need to define a `githubToken` in `config.json` in the root folder e.g.
+
+```json
+{
+    "githubToken": "asdjaksgkjakdsa"
+}
+```
+
+Build and watch files and fire up a local development server:
+
+`npm start`
+
+The open `http://localhost:3000/dev.html`
+
+
 Architecture
 ----------------
 

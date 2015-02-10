@@ -1,15 +1,59 @@
 {
   "name": "Monitoring-app",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "An app for viewing monitoring data",
   "license": "MIT",
   "devDependencies": {
     "browserify": "^6.3.3",
+    "catw": "^0.2.0",
     "clean-css": "2",
-    "d3": "3",
     "js-yaml": "~2.0.3",
-    "queue-from-async": "^1.0.0",
+    "serve": "^1.4.0",
     "smash": "0.0",
-    "uglify-js": "~2.2.5"
+    "uglify-js": "~2.2.5",
+    "watchify": "^2.3.0"
+  },
+  "dependencies": {
+    "backbone": "^1.1.2",
+    "backbone-github": "git://github.com/digidem/backbone-github",
+    "crossfilter": "^1.3.11",
+    "d3": "3",
+    "leaflet": "^0.7.3",
+    "lodash": "^3.1.0"
+  },
+  "scripts": {
+    "start": "npm run watch & serve",
+    "lint": "jshint js/mapfilter",
+    "watch-js": "watchify -v -d js/mapfilter/mapfilter.js -o dist/mapfilter.js",
+    "build-js": "browserify -d js/mapfilter/mapfilter.js > dist/mapfilter.js",
+    "build-css": "cat css/bootstrap.css css/chart.css css/core.css css/leaflet.css > dist/mapfilter.css",
+    "watch-css": "catw css/bootstrap.css css/chart.css css/core.css css/leaflet.css -o dist/mapfilter.css -v",
+    "watch": "npm run watch-js & npm run watch-css",
+    "build": "npm run build-js && npm run build-css",
+    "production": "browserify js/mapfilter/mapfilter.js -d -p [minifyify --map mapfilter.min.js.map --output dist/mapfilter.min.js.map] > dist/mapfilter.min.js"
+  },
+  "jshintConfig": {
+    "globals": {
+      "require": false,
+      "module": false,
+      "exports": false,
+      "console": false,
+      "$": false,
+      "t": false,
+      "L": false
+    },
+    "predef": [
+      "-Map",
+      "-Worker"
+    ],
+    "newcap": false,
+    "browser": true,
+    "node": true,
+    "globalstrict": true,
+    "trailing": true,
+    "undef": true,
+    "unused": true,
+    "debug": true,
+    "esnext": true
   }
 }

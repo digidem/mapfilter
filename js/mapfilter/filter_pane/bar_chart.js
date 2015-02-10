@@ -1,23 +1,29 @@
-MapFilter.BarChart = function() {
-    if (!MapFilter.BarChart.id) MapFilter.BarChart.id = 0;
+'use strict';
+
+var d3 = require('d3');
+var id = 0;
+
+module.exports = function() {
 
     var margin = {top: 10, right: 10, bottom: 20, left: 10},
         x,
         y = d3.scale.linear().range([110, 0]),
-        id = MapFilter.BarChart.id++,
         axis = d3.svg.axis().orient("bottom"),
         brush = d3.svg.brush(),
         brushDirty,
         dimension,
         group,
+        collection,
         round;
+
+    id++;
 
     function chart(div) {
       var width = x.range()[1],
           addDays = d3.time.day.offset,
           height = y.range()[0];
 
-      x.domain([addDays(app.collection.at(0).getDate(), -2), addDays(app.collection.at(app.collection.length-1).getDate(), 1)]);
+      x.domain([addDays(collection.at(0).getDate(), -2), addDays(collection.at(collection.length-1).getDate(), 1)]);
       y.domain([0, group.top(1)[0].value]);
 
       div.each(function() {
@@ -139,9 +145,14 @@ MapFilter.BarChart = function() {
         // div.select(".title a").style("display", "none");
         d3.select("#clip-" + id + " rect").attr("x", null).attr("width", "100%");
         dimension.filterAll();
-        app.collection.trigger("filtered");
+        collection.trigger("filtered");
       }
     });
+
+    chart.collection = function(_) {
+      collection = _;
+      return chart;
+    };
 
     chart.margin = function(_) {
       if (!arguments.length) return margin;

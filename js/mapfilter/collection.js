@@ -4,7 +4,16 @@
 // This collection of models (data records) extends  
 // [crossfilter()](http://square.github.io/crossfilter/) 
 // to allow fast filtering by different filters / dimensions
-MapFilter.Collection = Backbone.Collection.extend({
+'use strict';
+
+var Backbone = require('backbone');
+Backbone.$ = $;
+var crossfilter = require('crossfilter');
+
+var config = require('../../config.json');
+var sync = require('backbone-github')({ githubToken: config.githubToken });
+
+module.exports = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         // Pass the url endpoint for this collection in the options hash
@@ -30,6 +39,10 @@ MapFilter.Collection = Backbone.Collection.extend({
         this.resetFilter();
         this.on("change remove reset", this.resetFilter);
         this.on("add firstfetch", this.addToFilter);
+    },
+
+    sync: function() {
+        return sync.apply(this, arguments);
     },
 
     // A wrapper for `crossfilter().dimension` which stores a reference

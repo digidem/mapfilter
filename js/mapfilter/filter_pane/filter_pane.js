@@ -8,7 +8,13 @@
 // - `field` is the field/attribute to filter by
 // - `type` should be `discrete` for string data and `continuous` for numbers or dates
 // - `expanded` sets whether the filter view is expanded or collapsed by default    
-MapFilter.FilterPane = Backbone.View.extend({
+'use strict';
+
+var GraphPane = require('./graph_pane.js');
+var ContinuousFilterView = require('./continuous_filter_view.js');
+var DiscreteFilterView = require('./discrete_filter_view.js');
+
+module.exports = require('backbone').View.extend({
 
     events: {
         "click .print-preview": "showPrintPreview"
@@ -18,7 +24,7 @@ MapFilter.FilterPane = Backbone.View.extend({
         var filters = options.filters || [];
 
         // Initialize a graph pane to hold charts for continuous filters
-        this.graphPane = new MapFilter.GraphPane({
+        this.graphPane = new GraphPane({
             collection: this.collection
         });
         
@@ -52,14 +58,14 @@ MapFilter.FilterPane = Backbone.View.extend({
         // ContinousFilterView is linked to the GraphPane which will show
         // the bar chart for selecting ranges of data
         if (options.type === "continuous") {
-            filterView = new MapFilter.ContinuousFilterView({
+            filterView = new ContinuousFilterView({
                 collection: this.collection,
                 field: options.field,
                 expanded: options.expanded || false,
                 graphPane: this.graphPane
             });
         } else {
-            filterView = new MapFilter.DiscreteFilterView({
+            filterView = new DiscreteFilterView({
                 collection: this.collection,
                 field: options.field,
                 expanded: options.expanded || false

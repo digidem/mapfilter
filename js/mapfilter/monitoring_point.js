@@ -5,7 +5,9 @@
 // which format the model attributes for use in the view templates.
 // If the fields on the model should change, you can just change these
 // methods without needing to modify the rest of the application.
-MonitoringPoint = Backbone.Model.extend({
+'use strict';
+
+module.exports = require('backbone').Model.extend({
 
 	idAttribute: "_uuid",
 

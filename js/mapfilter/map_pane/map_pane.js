@@ -7,7 +7,12 @@
 // `options.center` is a [lat,lon] array of the starting center point for the map
 // `options.zoom` is the initial zoom level for the map                                                                                                                                   this.markersById[model.cid]       =    new           MapFilter.MarkerView({ model: model, map:             this.map });     } [description]
 // `options.tileUrl` is [URL template](http://leafletjs.com/reference.html#url-template) for map tile layer
-MapFilter.MapPane = Backbone.View.extend({
+'use strict';
+
+var MarkerView = require('./marker_view.js');
+var _ = require('lodash');
+
+module.exports = require('backbone').View.extend({
 
     initialize: function(options) {
         // Initialize the [Leaflet](http://leafletjs.com/) map attaching to this view's element
@@ -16,6 +21,8 @@ MapFilter.MapPane = Backbone.View.extend({
             zoom: options.zoom,
             scrollWheelZoom: options.scrollWheelZoom || true
         });
+
+        this.appView = options.appView;
 
         // Add the background tile layer to the map
         this.wapichanaLayer = L.tileLayer(options.tileUrl).addTo(this.map);
@@ -78,9 +85,10 @@ MapFilter.MapPane = Backbone.View.extend({
     // Create a new MarkerView for each model added to the collection,
     // and store a reference to that view in markersById 
     addOne: function(model) {
-        this.markersById[model.cid] = new MapFilter.MarkerView({
+        this.markersById[model.cid] = new MarkerView({
             model: model,
-            map: this.map
+            map: this.map,
+            appView: this.appView
         });
     },
 

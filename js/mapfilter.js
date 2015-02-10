@@ -8,8 +8,6 @@ module.exports = window.mapFilter = function(options) {
 
     var appView = new AppView({
 
-        el: options.el,
-
         collection: new Collection(void 0, {
                         model: MonitoringPoint,
                         url: options.url,
@@ -23,10 +21,6 @@ module.exports = window.mapFilter = function(options) {
 
         // Initial map zoom
         mapZoom: 10,
-
-        tileUrl: options.tileUrl,
-
-        bingKey: options.bingKey
     });
 
     return appView;

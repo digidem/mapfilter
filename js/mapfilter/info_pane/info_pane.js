@@ -4,7 +4,11 @@
 // The InfoPane manages the display of the attributes and media associated
 // with a point. It appears on mouseover/hover of a point, but if you click
 // the point then it will "stick" open.
-MapFilter.InfoPane = Backbone.View.extend({
+'use strict';
+
+var _ = require('lodash');
+
+module.exports = require('backbone').View.extend({
 
     events: {
         "click .close": "close"

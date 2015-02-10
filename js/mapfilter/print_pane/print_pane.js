@@ -1,4 +1,10 @@
-MapFilter.PrintPane = Backbone.View.extend({
+'use strict';
+
+var _ = require('lodash');
+var MapPane = require('../map_pane/map_pane.js');
+var InfoPane = require('../info_pane/info_pane.js');
+
+module.exports = require('backbone').View.extend({
 
     events: {
         "click .print": "print",
@@ -17,7 +23,7 @@ MapFilter.PrintPane = Backbone.View.extend({
 
         this.$filterPanesEl = this.$('#info-panes-print');
 
-        this.mapPane = new MapFilter.MapPane({
+        this.mapPane = new MapPane({
             el: this.$('#map-print'),
             center: options.center,
             zoom: options.zoom,
@@ -46,7 +52,7 @@ MapFilter.PrintPane = Backbone.View.extend({
 
             // Only show info for unfiltered records
             if (d.value > 0) {
-                var infoPane = this.infoPanesByCid[cid] || new MapFilter.InfoPane({
+                var infoPane = this.infoPanesByCid[cid] || new InfoPane({
                     className: "info-print-view",
                     model: model
                 }).render();

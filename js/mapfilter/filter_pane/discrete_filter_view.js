@@ -4,7 +4,11 @@
 // Creates a view to filter the collection by a discrete field
 // (i.e. a string value or list of space-separated tags).
 // Pass `options.field` with the name of the field/attribute to filter on.
-MapFilter.DiscreteFilterView = Backbone.View.extend({
+'use strict';
+
+var _ = require('lodash');
+
+module.exports = require('backbone').View.extend({
 
     events: {
         "click .select_all": "selectAll",
@@ -27,14 +31,14 @@ MapFilter.DiscreteFilterView = Backbone.View.extend({
         // `p` is `{}` for the first execution (passed from reduceInitial). 
         // For every subsequent execution it is the value returned from reduceAdd of the prev row
         function reduceAdd(p, v) {
-            v.get(field).split(" ").forEach(function(val, idx) {
+            v.get(field).split(" ").forEach(function(val) {
                 p[val] = (p[val] || 0) + 1; //increment counts
             });
             return p;
         }
 
         function reduceRemove(p, v) {
-            v.get(field).split(" ").forEach(function(val, idx) {
+            v.get(field).split(" ").forEach(function(val) {
                 p[val] -= 1;
             });
             return p;
@@ -44,7 +48,7 @@ MapFilter.DiscreteFilterView = Backbone.View.extend({
         // works in functional languages. this map will contain the final counts 
         // by the time we are done reducing our entire data set.
         function reduceInitial() {
-            return {};  
+            return {};
         }
 
         // Create a dimension on the field for filtering
@@ -71,8 +75,8 @@ MapFilter.DiscreteFilterView = Backbone.View.extend({
         // Create an array of checkboxes for each unique value of the filter field
         _.forEach(this.groupAll.value(), function(v, k) {
             checkboxes.push(this.checkboxTemplate({
-                key: k, 
-                text: t(this.field + "." + k), 
+                key: k,
+                text: t(this.field + "." + k),
                 labelClass: (this.field === "happening") ? "label" : "",
                 className: "checkbox " + k
             }));

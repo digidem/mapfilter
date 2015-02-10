@@ -1,4 +1,4 @@
-MapFilter.colors = [
+module.exports = [
 '#a6cee3',
 '#1f78b4',
 '#b2df8a',

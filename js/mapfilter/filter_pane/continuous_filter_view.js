@@ -5,7 +5,12 @@
 // **TODO** currently only supports date fields.
 // It shows the currently selected range and the GraphPane which displays
 // a barchart that allows a filter range to be selected.
-MapFilter.ContinuousFilterView = Backbone.View.extend({
+'use strict';
+
+var d3 = require('d3');
+var _ = require('lodash');
+
+module.exports = require('backbone').View.extend({
 
     events: {
         "click .select_range": "showGraphPane",

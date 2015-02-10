@@ -1,4 +1,8 @@
-MapFilter.GraphPane = Backbone.View.extend({
+'use strict';
+
+var d3 = require('d3');
+var BarChart = require('./bar_chart.js');
+module.exports = require('backbone').View.extend({
 
     id: "graph-pane",
 
@@ -7,13 +11,14 @@ MapFilter.GraphPane = Backbone.View.extend({
         "click": "noop"
     },
 
-    initialize: function() {
+    initialize: function(options) {
         var self = this;
         this.$el.append('<button type="button" class="close" aria-hidden="true">&times;</button>');
         var date = this.collection.dimension(function(d) { return new Date(d.attributes.today); }),
             dates = date.group(d3.time.day);
 
-        this.barChart = MapFilter.BarChart()
+        this.barChart = BarChart()
+            .collection(options.collection)
             .dimension(date)
             .group(dates)
             .round(d3.time.day.round)
