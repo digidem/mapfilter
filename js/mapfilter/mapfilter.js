@@ -31,4 +31,3 @@ module.exports = window.mapFilter = function(options) {
 
     return appView;
 };
-

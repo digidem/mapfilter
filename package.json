@@ -24,13 +24,13 @@
   "scripts": {
     "start": "mkdir -p dist && npm run watch & serve",
     "lint": "jshint js/mapfilter",
-    "watch-js": "watchify -v -d js/mapfilter/mapfilter.js -o dist/mapfilter.js",
-    "build-js": "browserify -d js/mapfilter/mapfilter.js > dist/mapfilter.js",
+    "watch-js": "watchify -v -d js/app.js -o dist/mapfilter.js",
+    "build-js": "browserify -d js/app.js > dist/mapfilter.js",
     "build-css": "GLOBIGNORE=css/print.css & cat css/bootstrap.css css/chart.css css/core.css css/leaflet.css > dist/mapfilter.css && cat css/print.css > dist/print.css",
     "watch-css": "catw css/bootstrap.css css/chart.css css/core.css css/leaflet.css -o dist/mapfilter.css -v & catw css/print.css -o dist/print.css -v",
     "watch": "npm run watch-js & npm run watch-css",
     "build": "npm run build-js && npm run build-css",
-    "production": "browserify js/mapfilter/mapfilter.js -d -p [minifyify --map mapfilter.min.js.map --output dist/mapfilter.min.js.map] > dist/mapfilter.min.js"
+    "production": "browserify js/app.js -d -p [minifyify --map mapfilter.min.js.map --output dist/mapfilter.min.js.map] > dist/mapfilter.min.js"
   },
   "jshintConfig": {
     "globals": {
