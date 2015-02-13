@@ -22,7 +22,7 @@
     "lodash": "^3.1.0"
   },
   "scripts": {
-    "start": "npm run watch & ./node_modules/serve",
+    "start": "mkdir -p dist && npm run watch & serve",
     "lint": "jshint js/mapfilter",
     "watch-js": "watchify -v -d js/mapfilter/mapfilter.js -o dist/mapfilter.js",
     "build-js": "browserify -d js/mapfilter/mapfilter.js > dist/mapfilter.js",
