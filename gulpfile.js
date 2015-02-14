@@ -26,9 +26,9 @@ gulp.task('clean', clean)
 // development
 
 gulp.task('live-dev', ['dev', 'dev-server'], function() {
-  gulp.watch('./app/**/*.scss', ['dev-css'])
-  gulp.watch('./app/**/*.js', ['dev-js'])
-  gulp.watch('./app/**/*.html', ['dev-html'])
+  gulp.watch('./app/css/**', ['dev-css'])
+  gulp.watch('./app/js/**', ['dev-js'])
+  gulp.watch('./**/*.html', ['dev-html'])
   gutil.log(gutil.colors.bgGreen('Watching for changes...'))
 })
 
@@ -70,7 +70,6 @@ function startServer() {
 var bundler = watchify(browserify('./app/js/index.js', watchify.args))
 // brfs needed for watchify
 bundler.transform('brfs')
-// bundler.on('update', devJs) // on any dep update, runs the bundler
 
 function devJs() {
   return bundler.bundle()
