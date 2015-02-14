@@ -27,7 +27,7 @@ module.exports = require('backbone').View.extend({
         this.$el.attr("id", this.field);
         this.format = d3.time.format("%d %b %Y");
 
-        this.template = _.template($("#template-continuous-filter").html());
+        this.template = JST['continuous-filter'];
         this.dimension = this.collection.dimension(function(d) { return new Date(d.attributes[options.field]); });
         this.group = this.dimension.group(d3.time.day);
         this.listenTo(this.collection, "filtered firstfetch", this.render);

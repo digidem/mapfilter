@@ -1,6 +1,6 @@
 {
-  "name": "Hello World!",
-  "description": "My first Chrome App.",
+  "name": "MapFilter",
+  "description": "Offline geo-data management tool",
   "version": "0.1",
   "manifest_version": 2,
   "app": {

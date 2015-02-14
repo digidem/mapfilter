@@ -17,7 +17,7 @@ module.exports = require('backbone').View.extend({
     initialize: function(options) {
         options = options || {};
         if (options.id) this.$el.attr("id", options.id);
-        this.template = _.template($("#template-info-pane").html());
+        this.template = JST['info-pane'];
     },
 
     // Populates the infopane contents with the data from the selected point

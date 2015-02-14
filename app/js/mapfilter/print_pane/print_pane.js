@@ -15,7 +15,7 @@ module.exports = require('backbone').View.extend({
 
     initialize: function(options) {
         this.infoPanesByCid = {};
-        this.template = _.template($("#template-print-pane").html());
+        this.template = JST['print-pane'];
 
         this.$el.html(this.template({
             infoPanes: []

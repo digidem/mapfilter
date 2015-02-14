@@ -1,8 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head>
-  </head>
-  <body>
-    <div>Hello, world!</div>
-  </body>
+<head>
+  <meta charset='UTF-8'/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="viewport" content="width=device-width" />
+
+  <!-- polyfills for legacy browsers -->
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/aight/1.1.1/aight.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/sizzle/1.10.9/sizzle.min.js"></script>
+  <![endif]-->
+
+  <link href='./bundle.css' rel='stylesheet' />
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src='./bundle.js'></script>
+  <script src='./templates.js'></script>
+</body>
+
 </html>

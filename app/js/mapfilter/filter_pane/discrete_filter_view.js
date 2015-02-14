@@ -23,12 +23,12 @@ module.exports = require('backbone').View.extend({
         this.$el.attr("id", field);
 
         // The template a partial are coded into the html
-        this.template = _.template($("#template-discrete-filter").html());
-        this.checkboxTemplate = _.template($("#template-checkbox").html());
+        this.template = JST['discrete-filter'];
+        this.checkboxTemplate = JST['checkbox'];
 
-        
+
         // `v` is the row in the dataset
-        // `p` is `{}` for the first execution (passed from reduceInitial). 
+        // `p` is `{}` for the first execution (passed from reduceInitial).
         // For every subsequent execution it is the value returned from reduceAdd of the prev row
         function reduceAdd(p, v) {
             v.get(field).split(" ").forEach(function(val) {
@@ -44,8 +44,8 @@ module.exports = require('backbone').View.extend({
             return p;
         }
 
-        // this is how our reduce function is seeded. similar to how inject or fold 
-        // works in functional languages. this map will contain the final counts 
+        // this is how our reduce function is seeded. similar to how inject or fold
+        // works in functional languages. this map will contain the final counts
         // by the time we are done reducing our entire data set.
         function reduceInitial() {
             return {};
@@ -65,7 +65,7 @@ module.exports = require('backbone').View.extend({
         this.render();
     },
 
-    // Renders the template with a list of checkboxes for each value to filter on 
+    // Renders the template with a list of checkboxes for each value to filter on
     render: function() {
         // If there is no data, noop
         if (!this.dimension.group().size()) return this;
@@ -91,7 +91,7 @@ module.exports = require('backbone').View.extend({
         return this;
     },
 
-    // Select all items in this filter 
+    // Select all items in this filter
     selectAll: function() {
         this.$("input").prop("checked", true);
     },
@@ -102,7 +102,7 @@ module.exports = require('backbone').View.extend({
         $(e.target).parents(".checkbox").find("input").prop("checked", true);
     },
 
-    // Update the filter on the collection whenever the selection changes 
+    // Update the filter on the collection whenever the selection changes
     updateFilter: function() {
         var selected = [];
 
