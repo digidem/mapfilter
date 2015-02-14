@@ -1,4 +1,5 @@
 var fs = require('fs')
+var join = require('path').join
 var gulp = require('gulp')
 var gutil = require('gulp-util')
 var sourcemaps = require('gulp-sourcemaps')
@@ -13,65 +14,65 @@ var connect = require('gulp-connect')
 var sass = require('gulp-sass')
 var concatCss = require('gulp-concat-css')
 var addsrc = require('gulp-add-src')
+var ChromeExtension = require('crx')
+var CONFIG = require('./config.json')
+
 
 // primary
 
 gulp.task('default', ['live-dev'])
 gulp.task('build', ['build-chrome'])
 
+
 // util
 
-gulp.task('clean', clean)
+gulp.task('clean', function clean(cb) {
+  del(['dist'], cb)
+})
+
+
+// generic
+
+gulp.task('css', function css(){
+  return gulp.src('./app/css/**.css')
+    // build bundle
+    .pipe(concatCss('bundle.css'))
+    .pipe(gulp.dest('./dist/'))
+    .pipe(connect.reload())
+})
+
+gulp.task('img', function img() {
+  return gulp.src('./app/images/**')
+    .pipe(gulp.dest('./dist/images'))
+    .pipe(connect.reload())
+})
+
 
 // development
 
 gulp.task('live-dev', ['dev', 'dev-server'], function() {
-  gulp.watch('./app/css/**', ['dev-css'])
-  gulp.watch('./app/js/**', ['dev-js'])
+  gulp.watch('./app/css/**', ['css'])
+  gulp.watch('./app/images/**', ['img'])
+  gulp.watch('./app/js/**', ['live-js'])
   gulp.watch('./**/*.html', ['dev-html'])
   gutil.log(gutil.colors.bgGreen('Watching for changes...'))
 })
 
 gulp.task('dev', function(callback){
-  runSequence('clean', ['dev-js', 'dev-css', 'dev-img', 'dev-html'], callback)
+  runSequence('clean', ['live-js', 'css', 'img', 'dev-html'], callback)
 })
-gulp.task('dev-js', devJs)
-gulp.task('dev-css', devCss)
-gulp.task('dev-html', devHtml)
-gulp.task('dev-img', devImg)
 
-// chrome packaged app
-
-gulp.task('build-chrome', function(callback){
-  runSequence('clean', ['build-chrome-meta', 'build-chrome-js', 'build-chrome-css', 'build-chrome-html', 'build-chrome-package'], callback)
-})
-gulp.task('build-chrome-meta', buildChromeMeta)
-gulp.task('build-chrome-js', buildChromeJs)
-gulp.task('build-chrome-css', buildChromeCss)
-gulp.task('build-chrome-html', ['build-chrome-js', 'build-chrome-css'], buildChromeHtml)
-gulp.task('build-chrome-package', ['build-chrome-meta', 'build-chrome-html'], buildChromePackage)
-
-gulp.task('dev-server', startServer)
-
-
-//
-//
-
-
-// development
-
-function startServer() {
+gulp.task('dev-server', function startServer() {
   connect.server({
     root: './dist',
     livereload: true,
   })
-}
+})
 
-var bundler = watchify(browserify('./app/js/index.js', watchify.args))
-// brfs needed for watchify
-bundler.transform('brfs')
-
-function devJs() {
+gulp.task('live-js', function devJs() {
+  var bundler = watchify(browserify('./app/js/index.js', watchify.args))
+  // brfs needed for watchify
+  bundler.transform('brfs')
   return bundler.bundle()
     // log errors if they happen
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
@@ -84,67 +85,37 @@ function devJs() {
     .pipe(gulp.dest('./dist'))
     // reload
     .pipe(connect.reload())
-}
+})
 
-function devCss(){
-  return gulp.src('./app/css/**.css')
-    // compile sass
-    // .pipe(sass())
-    // add lib css
-    // .pipe(addsrc('./lib/flexboxgrid.css'))
-    // build bundle
-    .pipe(concatCss('bundle.css'))
-    .pipe(gulp.dest('./dist/'))
-    .pipe(connect.reload())
-}
-
-function devImg() {
-  return gulp.src('./app/images/**')
-    .pipe(gulp.dest('./dist/images'))
-    .pipe(connect.reload())
-}
-
-function devHtml() {
+gulp.task('dev-html', function devHtml() {
   return gulp.src('./containers/dev/index.html')
     .pipe(gulp.dest('./dist/'))
     .pipe(connect.reload())
-}
+})
 
-// util
 
-function clean(cb) {
-  del(['dist'], cb)
-}
+// chrome packaged app
 
-// chrome app builds
+gulp.task('build-chrome', function(callback){
+  runSequence('clean', ['chrome-meta', 'chrome-js', 'css', 'img', 'chrome-html', 'chrome-package'], callback)
+})
 
-function buildChromeMeta() {
-  return gulp.src('./containers/chrome/package.json')
+gulp.task('chrome-meta', function buildChromeMeta() {
+  return gulp.src('./containers/chrome/**')
     .pipe(gulp.dest('./dist/'))
-}
+})
 
-function buildChromeJs() {
-  return browserify('./containers/chrome/index.js').bundle()
+gulp.task('chrome-js', function buildChromeJs() {
+  return browserify('./app/js/index.js').bundle()
     // log errors
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
     // perform bundle
     .pipe(source('bundle.js'))
     // .pipe(streamify(uglify()))
     .pipe(gulp.dest('./dist/'))
-}
+})
 
-function buildChromeCss(){
-  return gulp.src('./app/css/**.css')
-    // compile scss
-    // .pipe(sass())
-    // add lib css
-    // .pipe(addsrc('./lib/flexboxgrid.css'))
-    // build bundle
-    // .pipe(concatCss('bundle.css'))
-    .pipe(gulp.dest('./dist/'))
-}
-
-function buildChromeHtml() {
+gulp.task('chrome-html', ['chrome-js', 'css', 'img'], function buildChromeHtml() {
   var inliner = HtmlInline({
     basedir: './dist/',
     ignoreScripts: false,
@@ -152,13 +123,29 @@ function buildChromeHtml() {
     ignoreStyles: false,
   })
   inliner.on('error', gutil.log.bind(gutil, 'HtmlInline Error'))
-  return fs.createReadStream('./app/index.html')
+  return fs.createReadStream('./containers/chrome/index.html')
     .pipe(inliner)
     // name it, build it
     .pipe(source('index.html'))
     .pipe(gulp.dest('./dist/'))
-}
+})
 
-function buildChromePackage(callback) {
-  callback(new Error('not implemented'))
-}
+gulp.task('chrome-package', ['chrome-meta', 'chrome-html'], function buildChromePackage(callback) {
+  var packagePath = join(__dirname, 'dist')
+  var destPath = join(__dirname, 'dist')
+  var keyPath = join(__dirname, 'chrome.pem')
+
+  var crx = new ChromeExtension({
+    rootDirectory: packagePath,
+    // codebase: 'http://localhost:8000/myFirstExtension.crx',
+    privateKey: fs.readFileSync(keyPath),
+  })
+
+  crx.pack().then(function(crxBuffer){
+    // var updateXML = crx.generateUpdateXML()
+    // fs.writeFile(join(destPath, 'update.xml'), updateXML)
+    fs.writeFile(join(destPath, 'map-filter.crx'), crxBuffer, callback)
+  }).catch(function(err){
+    callback(err)
+  })
+})
