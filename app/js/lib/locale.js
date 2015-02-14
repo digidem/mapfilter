@@ -7,7 +7,7 @@ locale.current = function(_) {
     return locale;
 };
 
-function t(s, o, loc) {
+window.t = function(s, o, loc) {
     loc = loc || locale._current;
     if (!s) return s;
 

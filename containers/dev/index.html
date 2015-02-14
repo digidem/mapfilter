@@ -15,20 +15,22 @@
 
   <!-- global libs -->
 
-  <script src='js/lib/jquery-2.0.3.js'></script>
-  <script src='js/lib/locale.js'></script>
-  <script src='js/lib/leaflet-0.7.1.js'></script>
-  <script src='js/lib/bing_layer.js'></script>
-  <script src='js/lib/leaflet_providers.js'></script>
+<!--   // <script src='js/lib/jquery-2.0.3.js'></script>
+  // <script src='js/lib/locale.js'></script>
+  // <script src='js/lib/leaflet-0.7.1.js'></script>
+  // <script src='js/lib/bing_layer.js'></script>
+  // <script src='js/lib/leaflet_providers.js'></script> -->
 
   <!-- i18n locales -->
 
-  <script src='data/locale.js'></script>
+<!--
+  // <script src='data/locale.js'></script>
+ -->
 
   <!-- styles -->
 
-  <link href='dist/mapfilter.css' rel='stylesheet' />
-  <link href='dist/print.css' rel='stylesheet' id="print-style-sheet" media="print" />
+  <link href='./bundle.css' rel='stylesheet' />
+  <!-- <link href='./print.css' rel='stylesheet' id="print-style-sheet" media="print" /> -->
 
 </head>
 
@@ -106,7 +108,7 @@
 </script>
 
 <script type="text/html" id="template-print-pane">
-<div id="print-header">
+<div id="print-header" class="hide">
   <form class="print-options">
     <p><%= t("ui.print_view.print_view_description") %></p>
     <div class="checkbox">
@@ -127,7 +129,7 @@
     </div>
   </form>
 </div>
-<div id="print-pages">
+<div id="print-pages" class="hide">
   <div class="first-page">
     <h1>Monitoring Report</h1>
     <div id="map-print"/>
@@ -140,7 +142,7 @@
 </div>
 </script>
 
-<script src='dist/mapfilter.js'></script>
+<script src='./bundle.js'></script>
 
 </body>
 

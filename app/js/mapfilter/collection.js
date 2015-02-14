@@ -1,8 +1,8 @@
 // MapFilter.Collection
 // --------------------
 
-// This collection of models (data records) extends  
-// [crossfilter()](http://square.github.io/crossfilter/) 
+// This collection of models (data records) extends
+// [crossfilter()](http://square.github.io/crossfilter/)
 // to allow fast filtering by different filters / dimensions
 'use strict';
 
@@ -10,7 +10,7 @@ var Backbone = require('backbone');
 Backbone.$ = $;
 var crossfilter = require('crossfilter');
 
-var config = require('../../config.json');
+var config = require('../../../config.json');
 var sync = require('backbone-github')({ githubToken: config.githubToken });
 
 module.exports = Backbone.Collection.extend({
@@ -18,7 +18,7 @@ module.exports = Backbone.Collection.extend({
     initialize: function(models, options) {
         // Pass the url endpoint for this collection in the options hash
         if (options.url) this.url = options.url;
-        
+
         // Initialize a new [crossfilter](http://square.github.io/crossfilter/) instance
         this.crossfilter = crossfilter();
 
@@ -46,7 +46,7 @@ module.exports = Backbone.Collection.extend({
     },
 
     // A wrapper for `crossfilter().dimension` which stores a reference
-    // to the dimension which allows for the crossfilter to be reset later 
+    // to the dimension which allows for the crossfilter to be reset later
     dimension: function(value) {
         var dimension = this.crossfilter.dimension(value);
         this.dimensions.push(dimension);
@@ -54,7 +54,7 @@ module.exports = Backbone.Collection.extend({
     },
 
     // Clears the filters on all the dimensions and removes all records
-    // and re-adds them (`crossfilter().remove` only removes unfiltered records) 
+    // and re-adds them (`crossfilter().remove` only removes unfiltered records)
     resetFilter: function() {
         this.dimensions.forEach(function(dimension) {
             dimension.filterAll();
@@ -64,7 +64,7 @@ module.exports = Backbone.Collection.extend({
         return this;
     },
 
-    // Adds either a single model or a collection of models to the crossfilter 
+    // Adds either a single model or a collection of models to the crossfilter
     addToFilter: function(records) {
         if (records instanceof Backbone.Collection)
             records = records.models;

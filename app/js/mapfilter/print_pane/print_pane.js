@@ -73,7 +73,12 @@ module.exports = require('backbone').View.extend({
     },
 
     cancel: function() {
-        $("#print-style-sheet").attr("media", "print");
+        $("#map").removeClass("hide");
+        $("#filter-pane").removeClass("hide");
+        $("#info-pane").removeClass("hide");
+
+        $("#print-header").addClass("hide");
+        $("#print-pages").addClass("hide");
     },
 
     showMap: function() {

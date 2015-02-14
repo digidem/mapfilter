@@ -1,8 +1,18 @@
 'use strict';
 
+// lib
+require('./lib/jquery-2.0.3.js')
+require('./lib/locale.js')
+require('./lib/leaflet-0.7.1.js')
+require('./lib/bing_layer.js')
+require('./lib/leaflet_providers.js')
+require('../../data/locale.js')
+
+// app
+
 var mapFilter = require('./mapfilter/mapfilter.js')
 
-var app = mapFilter({
+var app = window.app = mapFilter({
   // target for github database
   url: 'https://github.com/digidem/wapichan-data/tree/master/monitoring_form_v1',
 
@@ -34,3 +44,5 @@ var app = mapFilter({
   // API key for Bing Maps use
   bingKey: 'AtCQswcYKiBKRMM8MHjAzncJvN6miHjgxbi2-m1oaFUHMa06gszNwt4Xe_te18FF'
 })
+
+window.tiles = require('./mapfilter/map_tile_utils.js')

@@ -4,7 +4,7 @@ var Collection = require('./collection.js');
 var MonitoringPoint = require('./monitoring_point.js');
 var AppView = require('./appview.js');
 
-module.exports = window.mapFilter = function(options) {
+module.exports = function(options) {
 
     var appView = new AppView({
 

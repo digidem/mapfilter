@@ -33,7 +33,6 @@ svg {
 }
 
 #print-pane {
-    visibility: hidden;
     position: absolute;
     top: 0;
     bottom: 0;

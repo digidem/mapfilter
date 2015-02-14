@@ -3,19 +3,18 @@
     padding: 0;
 }
 
-#map, 
-#filter-pane, 
+/*#map,
+#filter-pane,
 #info-pane
 {
     display: none;
-}
+}*/
 
 #app {
-    position: static;   
+    position: static;
 }
 
 #print-pane {
-    visibility: visible;
     display: block;
     position: static;
     overflow: visible;
@@ -36,9 +35,9 @@ h1, h2, h3 {
     page-break-after: always;
 }
 
-button.close {
+/*button.close {
     display: none;
-}
+}*/
 
 .map-icon {
     position: relative;
@@ -68,9 +67,9 @@ button.close {
     padding: 3px 0 16px;
 }
 
-.marker.filtered {
+/*.marker.filtered {
     display: none;
-}
+}*/
 
 .marker .marker-text {
     display: block;

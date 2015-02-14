@@ -4,10 +4,10 @@
 // The FilterPane shows the list of filters that can be used to explore data.
 // It creates a filter view for each filter in the array `options.filters`
 // which should have the following properties:
-// 
+//
 // - `field` is the field/attribute to filter by
 // - `type` should be `discrete` for string data and `continuous` for numbers or dates
-// - `expanded` sets whether the filter view is expanded or collapsed by default    
+// - `expanded` sets whether the filter view is expanded or collapsed by default
 'use strict';
 
 var GraphPane = require('./graph_pane.js');
@@ -27,7 +27,7 @@ module.exports = require('backbone').View.extend({
         this.graphPane = new GraphPane({
             collection: this.collection
         });
-        
+
         // Append the graph parent to this pane's parent
         this.$el.append(this.graphPane.render().el);
 
@@ -75,12 +75,13 @@ module.exports = require('backbone').View.extend({
         this.$filters.append(filterView.render().el);
     },
 
-    // When the page loads the print css is loaded with media="print"
-    // This removes that media attribute, so that the page appears as it 
-    // would appear when printed, effectively showing a print preview.
-    // Check the `print.css` for how certain elements are only shown in preview,
-    // and overridden with an @media rule within the CSS.
+    // hide elements
     showPrintPreview: function() {
-        $("#print-style-sheet").attr("media", "");
+        $("#map").addClass("hide");
+        $("#filter-pane").addClass("hide");
+        $("#info-pane").addClass("hide");
+
+        $("#print-header").removeClass("hide");
+        $("#print-pages").removeClass("hide");
     }
 });
