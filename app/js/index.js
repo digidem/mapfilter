@@ -1,21 +1,30 @@
 'use strict';
 
-// global deps
+// globally self-installing deps
 require('./lib/jquery-2.0.3.js')
 require('./lib/locale.js')
 require('./lib/leaflet-0.7.1.js')
 require('./lib/bing_layer.js')
 require('./lib/leaflet_providers.js')
+
 // required for templates
-window._ = require('./lib/lodash.modern-2.4.1.js')
+var lodash = require('./lib/lodash.modern-2.4.1.js')
+window._ = lodash
 
 // app
 require('../../data/locale.js')
-var config = require('../../data/locale.js')
+var config = require('../../config.json')
 var mapFilter = require('./mapfilter/mapfilter.js')
 
 
-// load templates first after eposing globals
+// Theres some subtle timing going on here due to the templates:
+// 1. load global dependencies
+// 2. globally expose lodash
+// 3. set app initialization to run on nextTick
+// 4. templates are loaded, using global lodash (via index.html)
+// 5. app initialization happens
+// 5. app uses templates
+
 process.nextTick(function(){
 
   var app = window.app = mapFilter({
@@ -52,6 +61,3 @@ process.nextTick(function(){
   })
 
 })
-
-
-
