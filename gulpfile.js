@@ -175,3 +175,16 @@ gulp.task('chrome-package', ['chrome-meta', 'chrome-html'], function buildChrome
     callback(err)
   })
 })
+
+// deploy
+
+var deploy = require('gulp-gh-pages')
+
+gulp.task('deploy', function () {
+  return gulp.src('./dist/**/*')
+    .pipe(deploy({
+      remote: 'origin',
+      branch: 'gh-pages',
+    }))
+})
+
