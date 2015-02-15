@@ -52,6 +52,17 @@ build:
 
 
 - [x] gulp build system
-- [ ] gulp fix live reload
-- [ ] build chrome app
+- [x] gulp fix live reload
+- [x] build to chrome app
+- [x] fix time filter bar (i broke it)
+- [x] gh-pages publish
+- [ ] use a single index.html ?
+- [ ] combine dev and webapp ?
+- [ ] config - make sure we're using for keys
+- [ ] dev doc + try fresh clone
+
 - [ ] chrome-fs
+- [ ] try html5-img-cache in chrome app
+
+
+

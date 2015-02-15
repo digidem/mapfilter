@@ -11,6 +11,7 @@ window._ = require('./lib/lodash.modern-2.4.1.js')
 
 // app
 require('../../data/locale.js')
+var config = require('../../data/locale.js')
 var mapFilter = require('./mapfilter/mapfilter.js')
 
 
@@ -47,7 +48,7 @@ process.nextTick(function(){
     // tileUrl: 'http://localhost:20008/tile/wapichana_background/{z}/{x}/{y}.png',
 
     // API key for Bing Maps use
-    bingKey: 'AtCQswcYKiBKRMM8MHjAzncJvN6miHjgxbi2-m1oaFUHMa06gszNwt4Xe_te18FF'
+    bingKey: config.bingToken,
   })
 
 })
