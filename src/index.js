@@ -12,6 +12,7 @@ const es = require('react-intl/locale-data/es')
 
 addLocaleData([...en, ...es])
 
+const MFPropTypes = require('./util/prop_types')
 const IndexRoute = require('./containers/index_route')
 const reducers = require('./reducers')
 const { replaceFeatures } = require('./action_creators')
@@ -28,6 +29,14 @@ const devTools = window.devToolsExtension ? window.devToolsExtension() : undefin
 const storeEnhancer = devTools ? compose(devTools, applyMiddleware(thunk)) : applyMiddleware(thunk)
 
 class MapFilter extends React.Component {
+  static propTypes = {
+    features: MFPropTypes.features
+  }
+
+  static defaultProps = {
+    features: []
+  }
+
   constructor (props) {
     super(props)
     const initialState = {features: props.features}

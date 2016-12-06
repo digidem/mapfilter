@@ -41,6 +41,20 @@ const mapboxFilter = PropTypes.arrayOf(
   ])
 )
 
+const features = PropTypes.arrayOf(
+  PropTypes.shape({
+    type: PropTypes.oneOf(['Feature']).isRequired,
+    geometry: PropTypes.oneOfType([
+      PropTypes.oneOf([null]),
+      PropTypes.shape({
+        type: PropTypes.oneOf(['Point']).isRequired,
+        coordinates: PropTypes.array.isRequired
+      })
+    ]).isRequired,
+    properties: PropTypes.object
+  })
+).isRequired
+
 /**
  * Our filter structure is similar to mapbox filters but we index
  * by key and then expression. We only allow filters to combined
@@ -67,5 +81,6 @@ module.exports = {
   mapViewFeature,
   fieldMapping,
   mapboxFilter,
+  features,
   filters
 }
