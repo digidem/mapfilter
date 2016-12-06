@@ -42,7 +42,7 @@ class DiscreteFilter extends React.Component {
   static propTypes = {
     fieldName: PropTypes.string.isRequired,
     checked: PropTypes.array,
-    values: PropTypes.array,
+    values: PropTypes.objectOf(PropTypes.number),
     onUpdate: PropTypes.func
   }
 
