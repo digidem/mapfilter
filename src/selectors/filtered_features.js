@@ -14,7 +14,7 @@ const getFilteredFeatures = createSelector(
   getColorIndex,
   (featuresById, filteredFeatures, colorIndex, coloredField) => {
     return filteredFeatures.map((f, i) => {
-      return assign({}, f, {
+      return assign({}, featuresById[f.id], {
         __label: CONFIG.labelChars.charAt(i)
       })
     })
