@@ -12,3 +12,5 @@ key.pem
 .DS_Store
 npm-debug.log
 secrets.txt
+
+.env

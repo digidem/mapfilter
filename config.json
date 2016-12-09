@@ -9,6 +9,7 @@
     "zoom": 10
   },
   "mapboxToken": "pk.eyJ1IjoiZ21hY2xlbm5hbiIsImEiOiJSaWVtd2lRIn0.ASYMZE2HhwkAw4Vt7SavEg",
+  "defaultMapStyle": "mapbox://styles/gmaclennan/cio7mcryg0015akm9b6wur5ic",
   "templates": [],
   "colors": [
     "#1f78b4",

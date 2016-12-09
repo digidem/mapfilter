@@ -1,15 +1,3 @@
 language: node_js
 node_js:
   - "6"
-before_deploy: npm run build
-deploy:
-  provider: s3
-  access_key_id: $S3_ACCESS_KEY_ID
-  secret_access_key: $S3_SECRET_KEY
-  bucket: "digidem-staging"
-  skip_cleanup: true
-  upload-dir: ${TRAVIS_REPO_SLUG}/${TRAVIS_BRANCH}
-  local_dir: build
-  detect_encoding: true
-  on:
-    all_branches: true
