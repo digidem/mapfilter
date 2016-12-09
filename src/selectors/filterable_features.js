@@ -7,7 +7,6 @@ const getIdFieldNames = require('./id_fields')
 const {FIELD_TYPES} = require('../constants')
 
 function dateStringToNumber (dateString) {
-  if (typeof dateString !== 'string') return dateString
   return +(new Date(dateString))
 }
 
