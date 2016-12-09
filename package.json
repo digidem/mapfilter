@@ -21,6 +21,7 @@
     "flat": "^2.0.1",
     "geojsonhint": "^1.2.0",
     "get-scrollbar-width": "^1.0.4",
+    "is-plain-object": "^2.0.1",
     "lodash": "^4.16.4",
     "mapbox-gl": "^0.27.0",
     "material-ui": "^0.16.4",

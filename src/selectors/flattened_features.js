@@ -1,28 +1,28 @@
-const flat = require('flat')
 const { createSelector } = require('reselect')
-const randomBytes = require('randombytes')
+const flat = require('flat')
+const assign = require('object-assign')
 
-const getFieldAnalysis = require('./field_analysis')
-const getIdFieldNames = require('./id_fields')
-
-function uniqueId () {
-  return randomBytes(8).toString('hex')
-}
+const getFeaturesWithIds = require('./features_with_ids')
+const getColorIndex = require('./color_index')
+const getColoredField = require('./colored_field')
+const CONFIG = require('../../config.json')
 
 const getFlattenedFeatures = createSelector(
-  (state) => state.features,
-  getFieldAnalysis,
-  getIdFieldNames,
-  (state, opts) => opts,
-  (features, fieldAnalysis, idFieldNames, opts) => features.map(f => {
-    const properties = flat(f.properties, opts)
-    // We use an existing id feature property, if it is unique across all features,
-    // or we use any unique id field we find under properties, or, failing that,
-    // we generate a unique id.
-    const id = fieldAnalysis.__validGeoJsonIdField ? f.id
-      : properties[idFieldNames[0]] || uniqueId()
-    return Object.assign({}, f, {id, properties})
-  })
+  getFeaturesWithIds,
+  getColoredField,
+  getColorIndex,
+  (features, colorIndex, coloredField) => {
+    return features.map(f => {
+      const newProps = flat(f.properties, {safe: true})
+      const coloredFieldValue = newProps[coloredField]
+      const colorHex = Array.isArray(coloredFieldValue)
+        ? colorIndex[coloredFieldValue[0]] : colorIndex[coloredFieldValue]
+      return assign({}, f, {
+        properties: newProps,
+        __color: (colorHex || CONFIG.defaultColor).slice(1)
+      })
+    })
+  }
 )
 
 module.exports = getFlattenedFeatures

@@ -26,5 +26,6 @@
   ],
   "defaultColor": "#555555",
   "dateFormatShort": "ll",
-  "dateFormatLong": "LL"
+  "dateFormatLong": "LL",
+  "labelChars": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 }

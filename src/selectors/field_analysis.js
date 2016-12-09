@@ -2,17 +2,7 @@ const { createSelector } = require('reselect')
 const urlRegex = require('url-regex')({exact: true})
 const url = require('url')
 const path = require('path')
-const flat = require('flat')
-
-// TODO: This will not flatten arrays, we need to handle that field type.
-const getSafeFlattenedFeatures = createSelector(
-  (state) => state.features,
-  (features) => features.map(f => {
-    return Object.assign({}, f, {
-      properties: flat(f.properties, {safe: true})
-    })
-  })
-)
+const isPlainObject = require('is-plain-object')
 
 const {FIELD_TYPES, FILTER_TYPES} = require('../constants')
 
@@ -155,7 +145,7 @@ function isUnique (f, features) {
  * @return {string} One of `string`, `number`, `bool`, `date`, `link`, `image`, `video`
  */
 function getType (v) {
-  if (v instanceof Date) return FIELD_TYPES.DATE
+  if (isDate(v)) return FIELD_TYPES.DATE
   if (typeof v === 'string' && urlRegex.test(v)) {
     const pathname = url.parse(v).pathname
     const ext = path.extname(pathname).slice(1)
@@ -165,6 +155,13 @@ function getType (v) {
   }
   if (Array.isArray(v)) return FIELD_TYPES.ARRAY
   return typeof v
+}
+
+function isDate (v) {
+  if (v instanceof Date) return true
+  return new Date(v) !== 'Invalid Date' && !isNaN(new Date(v))
+}
+
 }
 
 /**
@@ -179,7 +176,7 @@ function getType (v) {
  *   each discrete option, or a min/max for continuous fields
  */
 const getFieldAnalysis = createSelector(
-  getSafeFlattenedFeatures,
+  (state) => state.features,
   function analyzeFields (features) {
     const analysis = {}
     let idFieldValues = {}
@@ -187,12 +184,20 @@ const getFieldAnalysis = createSelector(
     for (let i = 0; i < features.length; i++) {
       if (features[i].id) idFieldValues = valuesReduce(idFieldValues, features[i].id)
       // For each feature, iterate over its properties
-      let properties = features[i].properties
-      let keys = Object.keys(properties)
+      traverse(features[i].properties, i)
+    }
+
+    function traverse (obj, i, prefix = '') {
+      let keys = Object.keys(obj)
       for (let j = 0; j < keys.length; j++) {
-        let value = properties[keys[j]]
-        let field = analysis[keys[j]] = analysis[keys[j]] || {fieldname: keys[j]}
-        const thisType = getType(value)
+        let value = obj[keys[j]]
+        let fieldname = prefix + keys[j]
+        if (isPlainObject(value)) {
+          traverse(value, i, fieldname + '.')
+          continue
+        }
+        let field = analysis[fieldname] = analysis[fieldname] || {fieldname: fieldname}
+        let thisType = getType(value)
         field.type = typeReduce(field.type, thisType)
         field.count = (field.count || 0) + 1
         if (!isFilterable(field.type)) continue
@@ -209,6 +214,7 @@ const getFieldAnalysis = createSelector(
         field.values = valuesReduce(field.values, value)
       }
     }
+
     for (let fieldname in analysis) {
       let field = analysis[fieldname]
       field.isUnique = isUnique(field, features)

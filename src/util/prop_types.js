@@ -6,6 +6,10 @@ const {PropTypes} = require('react')
 // We need to ensure each feature has an id so we can handle
 // callbacks for when a marker is clicked or hovered.
 const mapViewFeature = PropTypes.shape({
+  id: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]).isRequired,
   type: PropTypes.oneOf(['Feature']),
   geometry: PropTypes.oneOfType([
     PropTypes.oneOf([null]),
@@ -15,11 +19,11 @@ const mapViewFeature = PropTypes.shape({
     })
   ]).isRequired,
   properties: PropTypes.shape({
+    __mf_color: PropTypes.string.isRequired,
     __mf_id: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number
-    ]).isRequired,
-    __mf_color: PropTypes.string.isRequired
+    ]).isRequired
   }).isRequired
 })
 

@@ -47,7 +47,7 @@ const pointHoverStyleLayer = {
   id: 'features-hover',
   type: 'symbol',
   source: 'features',
-  filter: ['==', 'id', ''],
+  filter: ['==', '$id', ''],
   layout: {
     'icon-image': 'marker-{__mf_color}-hover',
     'icon-allow-overlap': true,
@@ -107,7 +107,7 @@ class MapView extends React.Component {
       {layers: ['features', 'features-hover']}
     )
     if (!features.length) return
-    this.props.onMarkerClick(features[0].properties.id)
+    this.props.onMarkerClick(features[0].properties.__mf_id)
   }
 
   handleMouseMove = (e) => {
@@ -119,12 +119,12 @@ class MapView extends React.Component {
     this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : ''
     if (!features.length) {
       this.popup.remove()
-      this.map.setFilter('features-hover', ['==', 'id', ''])
+      this.map.setFilter('features-hover', ['==', '$id', ''])
       return
     }
-    var props = features[0].properties
-    var hoveredFeatureId = props.id
-    this.map.setFilter('features-hover', ['==', 'id', hoveredFeatureId])
+    const props = features[0].properties
+    const hoveredFeatureId = props.__mf_id
+    this.map.setFilter('features-hover', ['==', '$id', hoveredFeatureId])
     // Popuplate the popup and set its coordinates
     // based on the feature found.
     if (!this.popup._map || hoveredFeatureId && hoveredFeatureId !== this.popup.__featureId) {

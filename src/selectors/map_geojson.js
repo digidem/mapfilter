@@ -1,28 +1,27 @@
 const { createSelector } = require('reselect')
 
-const getFlattenedFeatures = require('./flattened_features')
+const getFilterableFeatures = require('./filterable_features')
+const getRawFilteredFeatures = require('./filtered_features_raw')
 const getColorIndex = require('./color_index')
 const getColoredField = require('./colored_field')
+const CONFIG = require('../../config.json')
 
 const getMapGeoJSON = createSelector(
-  [getFlattenedFeatures, getColoredField, getColorIndex],
-  (features, coloredField, colorIndex) => {
+  getFilterableFeatures,
+  getRawFilteredFeatures,
+  getColoredField,
+  getColorIndex,
+  (features, filteredFeatures, coloredField, colorIndex) => {
     return {
       type: 'FeatureCollection',
       features: features.map(feature => {
         const props = feature.properties
+        const colorHex = colorIndex[props[coloredField] || props[coloredField + '.0']]
         const newProps = Object.assign({}, props, {
           __mf_id: feature.id,
-          __mf_color: colorIndex[props[coloredField] || props[coloredField + '.0']].slice(1)
+          __mf_color: (colorHex || CONFIG.defaultColor).slice(1),
+          __mf_label: CONFIG.labelChars.charAt(filteredFeatures.indexOf(feature))
         })
-        // Coerce dates to numbers
-        // TODO: This should be faster by using field analysis to find date
-        // fields rather than iterating properties on each feature
-        for (let key in props) {
-          if (props[key] instanceof Date) {
-            newProps[key] = +props[key]
-          }
-        }
         return Object.assign({}, feature, {
           properties: newProps
         })

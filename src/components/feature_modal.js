@@ -1,13 +1,12 @@
 const React = require('react')
 
 const { connect } = require('react-redux')
-const find = require('lodash/find')
 const { Card, CardMedia, CardText, CardHeader } = require('material-ui/Card')
 const IconButton = require('material-ui/IconButton').default
 const CloseIcon = require('material-ui/svg-icons/navigation/close').default
 const {FormattedMessage} = require('react-intl')
 
-const getFlattenedFeatures = require('../selectors/flattened_features')
+const getFeaturesById = require('../selectors/features_by_id')
 const getFieldMapping = require('../selectors/field_mapping')
 const getColorIndex = require('../selectors/color_index')
 const getVisibleFields = require('../selectors/visible_fields')
@@ -87,14 +86,14 @@ const FeatureModal = ({color, media, data, title, subtitle, onCloseClick}) => (
 
 module.exports = connect(
   (state, ownProps) => {
-    const features = getFlattenedFeatures(state, {safe: true})
+    const featuresById = getFeaturesById(state)
     const colorIndex = getColorIndex(state)
     const fieldMapping = getFieldMapping(state)
     const visibleFields = getVisibleFields(state)
     const fieldAnalysis = getFieldAnalysis(state)
 
-    const feature = find(features, {id: ownProps.id})
-    if (!feature) return
+    const feature = featuresById[ownProps.id]
+    if (!feature) return {}
     const geojsonProps = feature.properties
     const data = visibleFields
       .filter(f => typeof geojsonProps[f] !== 'undefined')
