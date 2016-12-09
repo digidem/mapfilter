@@ -162,6 +162,16 @@ function isDate (v) {
   return new Date(v) !== 'Invalid Date' && !isNaN(new Date(v))
 }
 
+/**
+ * Guess if a field is a UUID: if it has a length greater than
+ * 30, no variance in length, and is only one word.
+**/
+function isUUIDField (f) {
+  if (!f.isUnique) return
+  if (f.type !== FIELD_TYPES.STRING) return
+  return f.lengthStats.mean > 30 &&
+    f.lengthStats.vari === 0 &&
+    f.wordStats.max === 1
 }
 
 /**
@@ -218,6 +228,7 @@ const getFieldAnalysis = createSelector(
     for (let fieldname in analysis) {
       let field = analysis[fieldname]
       field.isUnique = isUnique(field, features)
+      if (isUUIDField(field)) field.type = FIELD_TYPES.UUID
       field.filterType = getFilterType(field)
     }
     const isIdFieldUnique = Object.keys(idFieldValues).length === features.length
