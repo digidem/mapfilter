@@ -217,9 +217,10 @@ const getFieldAnalysis = createSelector(
         }
         if (thisType === FIELD_TYPES.ARRAY) {
           field.maxArrayLength = Math.max(field.maxArrayLength || 1, value.length)
-        }
-        if (thisType === FIELD_TYPES.NUMBER || thisType === FIELD_TYPES.DATE) {
+        } else if (thisType === FIELD_TYPES.NUMBER) {
           field.valueStats = statReduce(field.valueStats, value, i)
+        } else if (thisType === FIELD_TYPES.DATE) {
+          field.valueStats = statReduce(field.valueStats, new Date(value), i)
         }
         field.values = valuesReduce(field.values, value)
       }
