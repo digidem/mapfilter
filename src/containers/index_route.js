@@ -14,6 +14,7 @@ import Settings from '../components/settings'
 import MapView from '../components/map'
 import ReportView from '../components/report'
 import MediaView from '../components/media'
+import TableView from '../components/table'
 
 const styles = {
   outer: {
@@ -90,6 +91,9 @@ IndexRoute.defaultProps = {
   }, {
     id: 'report',
     component: ReportView
+  }, {
+    id: 'table',
+    component: TableView
   }]
 }
 
