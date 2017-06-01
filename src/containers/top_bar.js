@@ -63,6 +63,11 @@ const messages = defineMessages({
     id: 'topbar.report',
     defaultMessage: 'Report',
     description: 'Report tab name'
+  },
+  table: {
+    id: 'topbar.table',
+    defaultMessage: 'Table',
+    description: 'Table tab name'
   }
 })
 
