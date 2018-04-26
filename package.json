@@ -29,6 +29,7 @@
     "localforage": "^1.5.0",
     "lodash": "^4.16.4",
     "mapbox-gl": "^0.41.0",
+    "mapbox-gl-layers": "^1.2.0",
     "material-ui": "^1.0.0-beta.35",
     "material-ui-icons": "^1.0.0-beta.35",
     "moment": "^2.15.2",
@@ -51,7 +52,8 @@
     "shallow-equal": "^1.0.0",
     "turf-extent": "^1.0.4",
     "url-regex": "^4.1.1",
-    "utm": "^1.1.1"
+    "utm": "^1.1.1",
+    "yo-yo": "^1.4.1"
   },
   "devDependencies": {
     "@storybook/react": "^3.2.3",

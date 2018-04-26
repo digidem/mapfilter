@@ -73,7 +73,8 @@ const reduxPersistOptions = {
 const controllableProps = [
   'filters',
   'filterFields',
-  'features',
+  'layers',
+  'onChangeLayers',
   'mapPosition',
   'mapStyle',
   'fieldTypes',

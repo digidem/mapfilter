@@ -25,6 +25,8 @@ function mapStateToProps (state, ownProps) {
   return {
     viewState: state.viewStates[ownProps.component.MfViewId],
     willPrint: state.print.willPrint,
+    layers: state.layers,
+    onChangeLayers: state.onChangeLayers,
     paperSize: state.print.paperSize,
     center: state.mapPosition.center,
     zoom: state.mapPosition.zoom,

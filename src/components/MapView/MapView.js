@@ -1,6 +1,7 @@
 import debug from 'debug'
 import PropTypes from 'prop-types'
 import React from 'react'
+import MapboxLayers from 'mapbox-gl-layers'
 import mapboxgl from 'mapbox-gl'
 import deepEqual from 'deep-equal'
 import assign from 'object-assign'
@@ -105,6 +106,15 @@ class MapView extends React.Component {
   static propTypes = {
     /* map center point [lon, lat] */
     center: PropTypes.array,
+    /* layers to see in the map view */
+    layers: PropTypes.arrayOf(PropTypes.shape({
+      /** The unique identifier for this tile set found in style.json */
+      id: PropTypes.string,
+      /** A localized display name for the tile set */
+      name: PropTypes.string
+    })),
+    /* Called when layer choice changed by user */
+    onChangeLayers: PropTypes.func,
     /* Geojson FeatureCollection of features to show on map */
     features: PropTypes.arrayOf(MFPropTypes.mapViewFeature).isRequired,
     /* Current filter (See https://www.mapbox.com/mapbox-gl-style-spec/#types-filter) */
@@ -194,7 +204,7 @@ class MapView extends React.Component {
   // The first time our component mounts, render a new map into `mapDiv`
   // with settings from props.
   componentDidMount () {
-    const { center, interactive, mapStyle, zoom } = this.props
+    const { center, interactive, mapStyle, zoom, layers, onChangeLayers } = this.props
 
     const mapDiv = document.createElement('div')
     mapDiv.style.height = '100%'
@@ -206,6 +216,13 @@ class MapView extends React.Component {
       container: mapDiv,
       center: center || [0, 0],
       zoom: zoom || 0
+    })
+
+    map.on('load', function () {
+      if (layers) {
+        layers.onChange = onChangeLayers
+        map.addControl(new MapboxLayers(layers), 'top-right')
+      }
     })
     map._prevStyle = mapStyle
 

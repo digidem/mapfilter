@@ -14,10 +14,13 @@ import resizer from './resizer'
 import settings from './settings'
 import print from './print'
 import viewStates from './view_states'
+import layers from './layers'
+import onChangeLayers from './onChangeLayers'
 
 export default combineReducers({
   features,
   filters,
+  layers,
   filterFields,
   mapPosition,
   mapStyle,
@@ -25,6 +28,7 @@ export default combineReducers({
   print,
   fieldMapping,
   fieldOrder,
+  onChangeLayers,
   fieldTypes,
   intl: intlReducer,
   resizer,
