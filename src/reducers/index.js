@@ -4,7 +4,7 @@ import {intlReducer} from 'react-intl-redux'
 import features from './features'
 import filters from './filters'
 import filterFields from './filter_fields'
-import mapPosition from './map_position'
+import mapViewState from './map_view_state'
 import mapStyle from './map_style'
 import ui from './ui'
 import fieldMapping from './field_mapping'
@@ -19,7 +19,7 @@ export default combineReducers({
   features,
   filters,
   filterFields,
-  mapPosition,
+  mapViewState,
   mapStyle,
   ui,
   print,

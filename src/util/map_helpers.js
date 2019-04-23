@@ -2,22 +2,23 @@ import extent from 'turf-extent'
 
 /**
  * @private
- * For a given geojson FeatureCollection, return the geographic bounds.
+ * For a given an array of geojson Features, return the geographic bounds.
  * For a missing or invalid FeatureCollection, return the bounds for
  * the whole world.
- * @param {object} fc Geojson FeatureCollection
- * @return {array} Bounds in format `[minLng, minLat, maxLng, maxLat]``
+ * @param {array} features Array of GeoJson Features
+ * @return {array} Bounds in format `[[minLng, minLat], [maxLng, maxLat]]``
  */
-export function getBoundsOrWorld (fc) {
+export function getBoundsOrWorld (features) {
   // If we don't have data, default to the extent of the whole world
   // NB. Web mercator goes to infinity at lat 90! Use lat 85.
-  if (!fc || !fc.features || !fc.features.length) {
-    return [-180, -85, 180, 85]
+  if (!features || !features.length) {
+    return [[-180, -85], [180, 85]]
   }
-  return extent({
+  const [minLng, minLat, maxLng, maxLat] = extent({
     type: 'FeatureCollection',
-    features: fc.features.filter(f => f.geometry)
+    features: features.filter(f => f.geometry)
   })
+  return [[minLng, minLat], [maxLng, maxLat]]
 }
 
 /**

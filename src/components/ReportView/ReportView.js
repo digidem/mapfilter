@@ -183,11 +183,12 @@ class ReportView extends React.Component {
     })
   }
 
-  memoizedSlice = memoize((arr, begin, end) => arr.slice(begin, end))
+  memoizedSlice = memoize((arr, start, end) => arr.slice(start, end))
 
   render () {
     const { filteredFeatures, featuresById, showFeatureDetail, fieldAnalysis, classes, requestPrint, paperSize, viewState } = this.props
     const featuresSlice = this.memoizedSlice(filteredFeatures, 0, MAX_REPORT_LEN)
+    console.log('report render')
     return (<div>
       <ReportToolbar
         hiddenFields={viewState.hiddenFields}

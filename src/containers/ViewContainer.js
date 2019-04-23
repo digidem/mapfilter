@@ -28,8 +28,6 @@ function mapStateToProps (state, ownProps) {
     viewState: state.viewStates[component.MfViewId],
     willPrint: state.print.willPrint,
     paperSize: state.print.paperSize,
-    center: state.mapPosition.center,
-    zoom: state.mapPosition.zoom,
     mapStyle: state.mapStyle,
     settings: state.settings,
     features: getFilterableFeatures(state),

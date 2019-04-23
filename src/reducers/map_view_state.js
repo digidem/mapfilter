@@ -1,6 +1,6 @@
 import assign from 'object-assign'
 
-const mapPosition = (state = {}, action) => {
+const mapViewState = (state = {}, action) => {
   switch (action.type) {
     case 'MOVE_MAP':
       return assign({}, state, action.payload)
@@ -9,4 +9,4 @@ const mapPosition = (state = {}, action) => {
   }
 }
 
-export default mapPosition
+export default mapViewState

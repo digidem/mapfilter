@@ -1,6 +1,6 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const MapView = require('../src/components/MapView').default
+const MapFilter = require('../src/index.js').default
 const createHistory = require('history').createBrowserHistory
 const { MuiThemeProvider, createMuiTheme } = require('@material-ui/core/styles')
 const blue = require('@material-ui/core/colors/blue').default
@@ -16,6 +16,8 @@ const theme = createMuiTheme({
     secondary: pink
   }
 })
+
+const fieldOrder = {caption: 1, public: 0}
 
 const MAPBOX_TOKEN = require('../config.json').mapboxToken
 
@@ -68,7 +70,7 @@ class Example extends React.Component {
     }
   }
   componentDidMount () {
-    this.intervalId = setInterval(() => {
+    this.intervalId = setTimeout(() => {
       const coords = randomPoint(1, {bbox: [-76.65, -16.96, -51.92, 6.64]}).features[0].geometry.coordinates
       console.log('fly to', coords)
       console.log('from', this.state.mapViewState)
@@ -76,12 +78,13 @@ class Example extends React.Component {
         mapViewState: Object.assign({}, this.state.mapViewState, {
           longitude: coords[0],
           latitude: coords[1],
-          zoom: 7 + (Math.random() * 5),
-          transitionInterpolator: new FlyToInterpolator(),
-          transitionDuration: 2000
+          zoom: 10,
+          transitionInterpolator: new LinearInterpolator(),
+          transitionDuration: 1000,
+          transitionEasing: d3.easeCubic
         })
       }))
-    }, 5000)
+    }, 10000)
   }
   handleHistoryChange = (location, action) => {
     if (action === 'POP') {
@@ -101,12 +104,17 @@ class Example extends React.Component {
   }
   render () {
     return <MuiThemeProvider theme={theme}>
-      <MapView
-        viewport={this.state.mapViewState}
+      <MapFilter
+        mapViewState={this.state.mapViewState}
         mapboxToken={MAPBOX_TOKEN}
-        mapStyle='mapbox://styles/mapbox/streets-v9'
-        moveMap={this.handleChangeMapViewState}
-        features={features} />
+        onChangeMapViewState={this.handleChangeMapViewState}
+        resizer={resizer}
+        features={this.state.features}
+        fieldOrder={fieldOrder}
+        ui={this.state.ui}
+        onChangeUi={this.handleChangeUi}
+        onChangeFeatures={this.handleChangeFeatures}
+        appBarMenuItems={[MyMenuItem]} />
     </MuiThemeProvider>
   }
 }

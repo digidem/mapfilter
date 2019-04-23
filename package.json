@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mapbox/sexagesimal": "^1.0.0",
+    "@material-ui/core": "^1.5.1",
     "@material-ui/icons": "^1.1.1",
     "@segment/isodate": "^1.0.2",
     "autosuggest-highlight": "^3.1.0",
@@ -41,6 +42,7 @@
     "react-intl": "^2.3.0",
     "react-intl-redux": "^0.6.0",
     "react-isolated-scroll": "^0.1.1",
+    "react-map-gl": "^4.0.9",
     "react-redux": "^5.0.5",
     "react-virtualized": "^9.8.0",
     "recompose": "^0.27.1",
@@ -52,11 +54,13 @@
     "shallow-equal": "^1.0.0",
     "turf-extent": "^1.0.4",
     "url-regex": "^4.1.1",
-    "utm": "^1.1.1"
+    "utm": "^1.1.1",
+    "viewport-mercator-project": "^6.1.0"
   },
   "devDependencies": {
     "@material-ui/codemod": "^1.1.0",
     "@storybook/react": "^3.2.3",
+    "@turf/random": "^6.0.2",
     "babel-cli": "^6.18.0",
     "babel-eslint": "^8.0.1",
     "babel-plugin-react-intl": "^2.3.1",
@@ -71,6 +75,7 @@
     "budo": "^10.0.3",
     "bundle-collapser": "^1.2.1",
     "copyfiles": "^2.0.0",
+    "d3-ease": "^1.0.5",
     "dependency-check": "^3.1.0",
     "dotenv": "^6.0.0",
     "envify": "^4.1.0",

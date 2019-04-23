@@ -70,7 +70,7 @@ const controllableProps = [
   'filters',
   'filterFields',
   'features',
-  'mapPosition',
+  'mapViewState',
   'mapStyle',
   'fieldTypes',
   'fieldOrder',
@@ -202,15 +202,6 @@ class MapFilter extends React.Component {
     viewToolbarButtons: PropTypes.arrayOf(PropTypes.shape({
       MfViewId: PropTypes.string.isRequired,
       button: PropTypes.oneOfType([PropTypes.element, PropTypes.func])
-    })),
-    /**
-     * An array of controls to add to the map. Each control should implement
-     * the IControl interface of mapbox-gl-js https://www.mapbox.com/mapbox-gl-js/api/#icontrol
-     * To set the position of the control, add a `getDefaultPosition()` method.
-     */
-    mapControls: PropTypes.arrayOf(PropTypes.shape({
-      onAdd: PropTypes.func.isRequired,
-      onRemove: PropTypes.func.isRequired
     }))
   }
 
@@ -242,6 +233,9 @@ class MapFilter extends React.Component {
     persistStore(this.store, assign({}, reduxPersistOptions, {
       keyPrefix: 'reduxPersist:' + props.datasetName + ':'
     }))
+    if (props.mapStyle.startsWith('mapbox:') && !props.mapboxToken) {
+      console.warn('To use a Mapbox style you must pass a mapboxToken prop')
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -251,11 +245,26 @@ class MapFilter extends React.Component {
   }
 
   render () {
-    const {actionButton, detailViewButtons, views, appBarButtons, appBarMenuItems, appBarTitle, locale, mapControls} = this.props
+    const {
+      actionButton,
+      detailViewButtons,
+      mapboxToken,
+      views,
+      appBarButtons,
+      appBarMenuItems,
+      appBarTitle,
+      locale
+    } = this.props
     return <Provider store={this.store}>
       <IntlProvider locale={locale} >
-        <App detailViewButtons={detailViewButtons} appBarMenuItems={appBarMenuItems}
-          actionButton={actionButton} views={views} appBarButtons={appBarButtons} appBarTitle={appBarTitle} mapControls={mapControls} />
+        <App
+          detailViewButtons={detailViewButtons}
+          appBarMenuItems={appBarMenuItems}
+          mapboxToken={mapboxToken}
+          actionButton={actionButton}
+          views={views}
+          appBarButtons={appBarButtons}
+          appBarTitle={appBarTitle} />
       </IntlProvider>
     </Provider>
   }

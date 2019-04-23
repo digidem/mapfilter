@@ -1,54 +1,60 @@
+
+import React from 'react'
 import debug from 'debug'
 import PropTypes from 'prop-types'
-import React from 'react'
-import mapboxgl from 'mapbox-gl'
-import deepEqual from 'deep-equal'
+import memoize from 'memoize-one'
 import assign from 'object-assign'
 import featureFilter from 'feature-filter-geojson'
+import ReactMapGL, {Popup, NavigationControl} from 'react-map-gl'
+import WebMercatorViewport from 'viewport-mercator-project'
 import { withStyles } from '@material-ui/core/styles'
+import { connect } from 'react-redux'
 
 import * as MFPropTypes from '../../util/prop_types'
 import { getBoundsOrWorld } from '../../util/map_helpers'
 
-import config from '../../../config.json'
-import Popup from './Popup'
+import PopupContent from './PopupContent'
+import MapStyleLoader from './MapStyleLoader'
 
 require('mapbox-gl/dist/mapbox-gl.css')
 
-/* Mapbox [API access token](https://www.mapbox.com/help/create-api-access-token/) */
-mapboxgl.accessToken = config.mapboxToken
-
 const log = debug('mf:mapview')
 
+const LABEL_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
 const styles = {
-  root: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute'
-  },
-  map: {
-    width: '100%',
-    height: '100%'
+  popup: {
+    '& .mapboxgl-popup-content': {
+      padding: 0
+    },
+    // The rules below override the style for anchoring the popup in the middle
+    // of a side, instead forcing the anchor to a corner
+    '&.mapboxgl-popup-anchor-left': {
+      transform: 'translate(0, 0) !important'
+    },
+    '&.mapboxgl-popup-anchor-bottom': {
+      transform: 'translate(-100%, -100%) !important'
+    },
+    '&.mapboxgl-popup-anchor-right': {
+      transform: 'translate(-100%, 0) !important'
+    },
+    '&.mapboxgl-popup-anchor-top': {
+      transform: 'translate(-100%, 0) !important'
+    }
   }
 }
 
-const emptyGeoJson = {
-  type: 'FeatureCollection',
-  features: []
-}
-
 const labelStyleLayer = {
-  id: 'labels',
+  id: 'mapfilter_labels',
   type: 'symbol',
   source: 'features',
   layout: {
-    'text-field': '',
+    'text-field': '{__mf_label}',
     'text-allow-overlap': true,
     'text-ignore-placement': true,
     'text-size': 9,
     'text-font': [
-      'DIN Offc Pro Bold',
-      'Arial Unicode MS Bold'
+      'DIN Offc Pro Bold'
     ]
   },
   paint: {
@@ -59,11 +65,11 @@ const labelStyleLayer = {
 }
 
 const pointStyleLayer = {
-  id: 'points',
+  id: 'mapfilter_points',
   type: 'circle',
   source: 'features',
   paint: {
-    // make circles larger as the user zooms from z12 to z22
+    // make circles larger as the user zooms from z7 to z18
     'circle-radius': {
       'base': 1.5,
       'stops': [[7, 5], [18, 25]]
@@ -72,49 +78,57 @@ const pointStyleLayer = {
       'property': '__mf_color',
       'type': 'identity'
     },
-    'circle-opacity': 0.75,
-    'circle-stroke-width': 1.5,
+    'circle-opacity': ['case',
+      ['boolean', ['feature-state', 'hover'], false],
+      1,
+      0.75
+    ],
+    'circle-stroke-width': ['case',
+      ['boolean', ['feature-state', 'hover'], false],
+      2.5,
+      1.5
+    ],
     'circle-stroke-color': '#ffffff',
-    'circle-stroke-opacity': 0.9
+    'circle-stroke-opacity': ['case',
+      ['boolean', ['feature-state', 'hover'], false],
+      1,
+      0.9
+    ]
   }
-}
-
-const pointHoverStyleLayer = {
-  id: 'points-hover',
-  type: 'circle',
-  source: 'hover',
-  paint: assign({}, pointStyleLayer.paint, {
-    'circle-opacity': 1,
-    'circle-stroke-width': 2.5,
-    'circle-stroke-color': '#ffffff',
-    'circle-stroke-opacity': 1
-  })
 }
 
 const noop = (x) => x
 
 class MapView extends React.Component {
   static defaultProps = {
-    center: [0, 0],
-    zoom: 0,
     features: [],
     showFeatureDetail: noop,
     moveMap: noop,
     interactive: true,
-    labelPoints: false,
-    mapControls: []
+    labelPoints: false
   }
 
   static propTypes = {
     /* map center point [lon, lat] */
-    center: PropTypes.array,
+    viewState: PropTypes.shape({
+      longitude: PropTypes.number,
+      latitude: PropTypes.number,
+      zoom: PropTypes.number,
+      transitionInterpolator: PropTypes.object,
+      transitionDuration: PropTypes.number
+    }),
     /* Geojson FeatureCollection of features to show on map */
     features: PropTypes.arrayOf(MFPropTypes.mapViewFeature).isRequired,
     /* Current filter (See https://www.mapbox.com/mapbox-gl-style-spec/#types-filter) */
     filter: MFPropTypes.mapboxFilter,
+    mapboxToken: PropTypes.string,
     /**
-     * - NOT yet dynamic e.g. if you change it the map won't change
-     * Map style. This must be an an object conforming to the schema described in the [style reference](https://mapbox.com/mapbox-gl-style-spec/), or a URL to a JSON style. To load a style from the Mapbox API, you can use a URL of the form `mapbox://styles/:owner/:style`, where `:owner` is your Mapbox account name and `:style` is the style ID. Or you can use one of the predefined Mapbox styles.
+     * Map style. This must be an an object conforming to the schema described
+     * in the [style reference](https://mapbox.com/mapbox-gl-style-spec/), or a
+     * URL to a JSON style. To load a style from the Mapbox API, you can use a
+     * URL of the form `mapbox://styles/:owner/:style`, where `:owner` is your
+     * Mapbox account name and `:style` is the style ID. Or you can use one of
+     * the predefined Mapbox styles.
      */
     mapStyle: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     labelPoints: PropTypes.bool,
@@ -127,264 +141,166 @@ class MapView extends React.Component {
     moveMap: PropTypes.func.isRequired,
     fieldMapping: MFPropTypes.fieldMapping,
     /* map zoom */
-    zoom: PropTypes.number,
-    interactive: PropTypes.bool,
-    mapControls: PropTypes.arrayOf(PropTypes.shape({
-      onAdd: PropTypes.func.isRequired,
-      onRemove: PropTypes.func.isRequired
-    }))
+    interactive: PropTypes.bool
   }
 
-  state = {}
+  state = {
+    hoveredId: null
+  }
 
-  handleMapMoveOrZoom = (e) => {
-    if (e.internal) return
-    this.props.moveMap({
-      center: this.map.getCenter().toArray(),
-      zoom: this.map.getZoom(),
-      bearing: this.map.getBearing()
+  constructor (props) {
+    super(props)
+    log('Creating new map instance with props:', props)
+    this.mapRef = window.mmap = React.createRef()
+  }
+
+  addLayers = memoize((style, showLabels) => {
+    const layers = showLabels ? [pointStyleLayer, labelStyleLayer] : [pointStyleLayer]
+    log('Adding layers to base style:', layers.map(l => l.id))
+    return assign({}, style, {
+      layers: style.layers.concat(layers)
     })
-  }
+  })
 
-  handleMapClick = (e) => {
-    // if (!this.map.loaded()) return
-    var features = this.map.queryRenderedFeatures(
-      e.point,
-      {layers: ['points-hover']}
-    )
-    if (!features.length) return
-    this.setState({lngLat: null})
-    this.props.showFeatureDetail(features[0].properties.__mf_id)
-  }
-
-  handleMouseMove = (e) => {
-    if (!this.map.loaded()) return
-    var features = this.map.queryRenderedFeatures(
-      e.point,
-      {layers: ['points', 'points-hover']}
-    )
-    this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : ''
-    if (!features.length) {
-      this.setState({lngLat: null})
-      this.map.getSource('hover').setData(emptyGeoJson)
-      return
-    }
-    this.map.getSource('hover').setData(features[0])
-    this.setState({lngLat: features[0].geometry.coordinates})
-    this.setState({id: features[0].properties.__mf_id})
-  }
-
-  ready (fn) {
-    if (this.map.loaded() && !this._styleDirty) {
-      fn()
-    } else {
-      this.map.once('load', () => fn.call(this))
-    }
-  }
-
-  render () {
-    const {classes} = this.props
-    return (
-      <div className={classes.root}>
-        <div
-          ref={(el) => (this.mapContainer = el)}
-          className={classes.map}
-        />
-        {this.state.lngLat && <Popup map={this.map} {...this.state} />}
-      </div>
-    )
-  }
-
-  centerMap (geojson) {
-    this.map.fitBounds(getBoundsOrWorld(geojson), {padding: 15, duration: 0})
-    if (this.map.getZoom() > 13) {
-      this.map.setZoom(13)
-    }
-  }
-
-  // The first time our component mounts, render a new map into `mapDiv`
-  // with settings from props.
-  componentDidMount () {
-    const { center, interactive, mapStyle, zoom, mapControls } = this.props
-
-    const mapDiv = document.createElement('div')
-    mapDiv.style.height = '100%'
-    mapDiv.style.width = '100%'
-    this.mapContainer.appendChild(mapDiv)
-
-    const map = window.map = this.map = new mapboxgl.Map({
-      style: mapStyle,
-      container: mapDiv,
-      center: center || [0, 0],
-      zoom: zoom || 0
-    })
-    map._prevStyle = mapStyle
-
-    if (!interactive) {
-      map.scrollZoom.disable()
-    }
-
-    // Add zoom and rotation controls to the map.
-    map.addControl(new mapboxgl.NavigationControl())
-    map.dragRotate.disable()
-    map.touchZoomRotate.disableRotation()
-
-    this.geojson = this.getGeoJson(this.props)
-
-    map.once('load', () => {
-      if (interactive) {
-        map.on('click', this.handleMapClick)
-        map.on('mousemove', this.handleMouseMove)
-      }
-      map.on('moveend', this.handleMapMoveOrZoom)
-      this.setupLayers(this.props)
-    })
-    map.once('style.load', () => {
-      mapControls.forEach(function (control) {
-        map.addControl.bind(map)(control)
+  addSource = memoize((style, data) => {
+    log('Adding GeoJSON source to base style')
+    return assign({}, style, {
+      sources: assign({}, style.sources, {
+        features: {
+          type: 'geojson',
+          data: data
+        }
       })
     })
+  })
 
-    // If no map center or zoom passed, set map extent to extent of marker layer
-    if (!center || !zoom) {
-      this.centerMap(this.geojson)
-    }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    this.updateIfNeeded(nextProps, this.props)
-  }
-
-  componentWillUnmount () {
-    this.map.off('moveend', this.handleMapMoveOrZoom)
-    this.map.off('click', this.handleMapClick)
-    this.map.off('mousemove', this.handleMouseMove)
-    this.map.remove()
-  }
-
-  setupLayers (props) {
-    const {filter, labelPoints} = props
-    this.map.addSource('features', {type: 'geojson', data: this.geojson})
-    // TODO: Should choose style based on whether features are point, line or polygon
-    this.map.addSource('hover', {type: 'geojson', data: emptyGeoJson})
-    this.map.addLayer(pointStyleLayer)
-    this.map.addLayer(pointHoverStyleLayer)
-    this.map.addLayer(labelStyleLayer)
-    this.map.setFilter('points', filter)
-    this.map.setFilter('labels', filter)
-    if (labelPoints) {
-      this.map.setLayoutProperty('labels', 'text-field', '{__mf_label}')
-      this.map.setPaintProperty('points', 'circle-radius', 7)
-    }
-  }
-
-  updateIfNeeded (nextProps, props = {}) {
-    const {disableScrollToZoom} = props
-
-    if (this.map._prevStyle !== nextProps.mapStyle) {
-      log('updating style')
-      this._styleDirty = true
-      this.map.setStyle(nextProps.mapStyle)
-      this.map._prevStyle = nextProps.mapStyle
-      this.map.once('style.load', () => {
-        this.setupLayers(nextProps)
-        this._styleDirty = false
-        if (!this.map._loaded) return
-        this.map.fire('load')
-      })
-    }
-
-    var shouldMapZoom = this.map.getZoom() !== nextProps.zoom
-    var shouldMapMove = !deepEqual(this.map.getCenter().toArray(), nextProps.center)
-
-    if (shouldMapZoom || shouldMapMove) {
-      this.map.flyTo({center: nextProps.center, zoom: nextProps.zoom}, {internal: true})
-    }
-
-    let shouldDataUpdate = nextProps.features !== props.features ||
-      nextProps.fieldMapping !== props.fieldMapping ||
-      nextProps.colorIndex !== props.colorIndex ||
-      (nextProps.filter !== props.filter && props.labelPoints)
-
-    this.ready(() => {
-      if (shouldDataUpdate) {
-        this.geojson = this.getGeoJson(nextProps)
-
-        log('updating source', this.geojson)
-        this.map.getSource('features').setData(this.geojson)
-
-        this.centerMap(this.geojson)
-      }
-
-      this.updateFilterIfNeeded(nextProps.filter)
-
-      if (disableScrollToZoom !== nextProps.disableScrollToZoom) {
-        nextProps.disableScrollToZoom ? this.map.scrollZoom.disable() : this.map.scrollZoom.enable()
-      }
-
-      const textField = nextProps.labelPoints ? '{__mf_label}' : ''
-
-      if (this.map.getLayoutProperty('labels', 'text-field') !== textField) {
-        log('updating labels "' + textField + '"')
-        this.map.setLayoutProperty('labels', 'text-field', textField)
-      }
-    })
-  }
-
-  /**
-   * Moves the map to a new position if it is different from the current position
-   * @param {array} center new coordinates for center of map
-   * @param {number} zoom   new zoom level for map
-   * @return {boolean} true if map has moved, otherwise false
-   */
-  moveIfNeeded (center, zoom) {
-    const currentPosition = {
-      center: this.map.getCenter().toArray(),
-      zoom: this.map.getZoom()
-    }
-    const newMapPosition = {
-      center,
-      zoom
-    }
-    const shouldMapMove = center && zoom &&
-      !deepEqual(currentPosition, newMapPosition)
-    if (shouldMapMove) {
-      log('Moving map')
-      this.map.jumpTo(newMapPosition)
-      return true
-    }
-    return false
-  }
-
-  updateFilterIfNeeded (filter) {
-    if (filter !== this.props.filter && filter) {
-      log('updating filter')
-      this.map.setFilter('points', filter)
-      this.map.setFilter('labels', filter)
-    }
-  }
-
-  // Construct GeoJSON for map
-  getGeoJson ({features = [], fieldMapping = {}, colorIndex = {}, filter = []}) {
-    let i = 0
+  getGeoJson = memoize((
+    features = [],
+    fieldMapping = {},
+    colorIndex = {},
+    filter = []
+  ) => {
+    log('Updating GeoJSON with current filter')
     const ff = featureFilter(filter)
     return {
       type: 'FeatureCollection',
       features: features
-        .filter(f => f.geometry)
-        .map(f => {
+        .filter(f => f.geometry && ff(f))
+        .map((f, i) => {
+          const colorValue = f.properties[fieldMapping.color] ||
+            f.properties[fieldMapping.color + '.0']
           const newFeature = {
+            // Mapbox-gl still (2019-01-22) does not support string ids,
+            // so we need to generate an id here and save the real is to props
+            id: i,
             type: 'feature',
             geometry: f.geometry,
             properties: assign({}, f.properties, {
               __mf_id: f.id,
-              __mf_color: colorIndex[f.properties[fieldMapping.color] || f.properties[fieldMapping.color + '.0']]
+              __mf_color: colorIndex[colorValue],
+              __mf_label: LABEL_CHARS.charAt(i)
             })
           }
-          if (ff(f)) newFeature.properties.__mf_label = config.labelChars.charAt(i++)
           return newFeature
         })
     }
+  })
+
+  onViewStateChange = ({viewState, interactionState, oldViewState}) => {
+    console.log('nextvp', viewState, interactionState, oldViewState)
+    const { viewport, moveMap } = this.props
+    const propsSpecifyMapLocation = viewport && typeof viewport.longitude === 'number'
+    if (propsSpecifyMapLocation) return moveMap(viewState)
+    // If the props for viewport are not set, zoom to bounds of data
+    const fittedViewport = new WebMercatorViewport(viewState)
+    const {longitude, latitude, zoom} = fittedViewport.fitBounds(
+      getBoundsOrWorld(this.props.features),
+      {padding: 15}
+    )
+    log('viewport not set on props, zooming to bounding box:', longitude, latitude, zoom)
+    moveMap(assign({}, viewState, {
+      longitude,
+      latitude,
+      zoom
+    }))
+  }
+
+  onHover = event => {
+    if (!this.props.interactive) return
+    // The more declarative way of doing this would be to set a new style on
+    // every render of the map if hoverId changes, but we use map feature state
+    // for performance reasons here
+    const map = this.mapRef.current.getMap()
+    const hoveredId = event.features.length ? event.features[0].id : null
+    if (hoveredId !== this.state.hoveredId) {
+      if (hoveredId) log('Hover of feature id:', event.features[0].properties.__mf_id)
+      map.setFeatureState({source: 'features', id: hoveredId}, { hover: true })
+      map.setFeatureState({source: 'features', id: this.state.hoveredId}, { hover: false })
+      this.setState({hoveredId})
+    }
+  }
+
+  onClick = event => {
+    if (!this.props.interactive) return
+    if (!event.features.length) return log('Click detected but no feature')
+    log('Clicked feature id:', event.features[0].properties.__mf_id)
+    this.props.showFeatureDetail(event.features[0].properties.__mf_id)
+  }
+
+  getCursor = ({isHovering, isDragging}) => {
+    if (isDragging) return 'grabbing'
+    if (isHovering && this.props.interactive) return 'pointer'
+    return 'grab'
+  }
+
+  render () {
+    const { features, fieldMapping, colorIndex, filter,
+      labelPoints, mapStyle, mapboxToken, classes, viewport } = this.props
+    const { hoveredId } = this.state
+    return <MapStyleLoader mapStyle={mapStyle} mapboxToken={mapboxToken}>
+      {(error, mapStyle) => {
+        if (error) return <div>{error.text}</div>
+        if (!mapStyle) return null // TODO: show loading indicator
+        const geojson = this.getGeoJson(features, fieldMapping, colorIndex, filter)
+        const styleWithLayers = this.addLayers(mapStyle, labelPoints)
+        const styleWithData = this.addSource(styleWithLayers, geojson)
+        const hoveredFeature = hoveredId !== null && geojson.features[hoveredId]
+        console.log(viewport)
+        return <ReactMapGL
+          ref={this.mapRef}
+          {...(viewport || {})}
+          interactiveLayerIds={['mapfilter_points']}
+          maxPitch={0}
+          dragRotate={false}
+          width='100%'
+          height='100%'
+          mapStyle={styleWithData}
+          onViewStateChange={this.onViewStateChange}
+          onHover={this.onHover}
+          onClick={this.onClick}
+          getCursor={this.getCursor}
+          mapboxApiAccessToken={mapboxToken}
+        >
+          <div className='mapboxgl-ctrl-top-left'>
+            <NavigationControl
+              showCompass={false}
+              onViewStateChange={this.onViewStateChange}
+            />
+          </div>
+          {hoveredFeature && <Popup
+            className={classes.popup}
+            longitude={hoveredFeature.geometry.coordinates[0]}
+            latitude={hoveredFeature.geometry.coordinates[1]}
+            tipSize={0}
+            closeButton={false}
+            captureClick={false}
+            captureDrag={false}
+            anchor='bottom-left'>
+            <PopupContent id={hoveredFeature.properties.__mf_id} />
+          </Popup>}
+        </ReactMapGL>
+      }}
+    </MapStyleLoader>
   }
 }
 
